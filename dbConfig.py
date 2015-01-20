@@ -7,13 +7,6 @@ Created on 2015-01-20
 DB configuration for the program
 '''
 
-'''
-TODO:
-import language dynamicly based on DB data for system language
-
-'''
-import _mysql#import mysql connector library
-
 class server:
     '''
     class for the server connection to Mysql Database
