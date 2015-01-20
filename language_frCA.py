@@ -15,6 +15,8 @@ class loginScreen:
     def __init__(self):
         
         self.quit = "Quitter"#Quit button
-        self.login = "Connexion"
+        self.login = "Connexion"#login button
+        self.username = "Nom d'utilisateur :"#label for username textField
+        self.password = "Mot de passe :"#label for password field
         
 login = loginScreen()

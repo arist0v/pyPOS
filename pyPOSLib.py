@@ -6,6 +6,8 @@ Created on 2015-01-20
 @author: arist0v
 DB configuration for the program
 ''''''
+from gtk._gtk import SIDE_LEFT
+from gtk._gtk import SIDE_RIGHT
 Created on 2015-01-20
 
 @author: arist0v
@@ -16,6 +18,10 @@ import dbConfig
 import hashlib
 import datetime#import time library for dynamic hash generation
 import Tkinter as tk#import tkinter Library
+
+'''
+importing the sys default language
+'''
 
 '''
 #function to get the current sys default language from database
@@ -42,6 +48,14 @@ def language():
             db.close()
     
     return data#return the language from the database result
+
+
+if (language() == "frCA"):#if language is French Canadian
+    import language_frCA as text#import the language file
+else:
+    print "Wrong Language"
+    sys.exit(1)
+
 
       
 '''
@@ -89,5 +103,43 @@ def defaultScreenSize():
             db.close()
     
     return data#return the language from the database result
+
+'''
+function to generate a login screen
+'''
+def loginScreen():
+        
+    window = tk.Tk()#create main windows
+    window.wm_title("pyPOS")#Title of windows
+    h = window.winfo_screenheight()
+    w = window.winfo_screenwidth()
     
+    window.geometry("{0}x{1}+0+0".format(w, h))
+    window.resizable(0, 0)
+    
+    mainFrame = tk.Frame(window, borderwidth=1)
+    
+    username = tk.StringVar()
+    password = tk.StringVar()
+    
+    usernameLabel = tk.Label(mainFrame, text=text.login.username)
+    usernameField = tk.Entry(mainFrame, textvariable=username, width=30)
+    passwordLabel = tk.Label(mainFrame, text=text.login.password)
+    passwordField = tk.Entry(mainFrame, textvariable=password, width=30, show="*")
+
+    loginButton = tk.Button(mainFrame, text=text.login.login)#create login button
+    quitButton = tk.Button(mainFrame, text=text.login.quit, command=window.quit)#create quit button
+        
+    usernameLabel.pack()
+    usernameField.pack()
+    passwordLabel.pack()
+    passwordField.pack()
+    
+    loginButton.pack(side="left")
+    quitButton.pack(side="right")
+   
+    mainFrame.pack()
+    mainFrame.place(relx=.42, rely=.40)
+    window.mainloop()
+    window.destroy()
     
