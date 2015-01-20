@@ -22,8 +22,8 @@ class server:
     def __init__(self):
         
         self.server="localhost"#mysql server to connect
-        self.user="pyPOS"#username for the server auth
-        self.password="pyPOS"#password for the server auth
+        self.user="POS"#username for the server auth
+        self.password="POS"#password for the server auth
         self.database="POS"#database name
 
 mysqlServer= server()
