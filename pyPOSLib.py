@@ -48,7 +48,9 @@ def language():
             db.close()
     
     return data#return the language from the database result
-
+'''
+import the specied language pack
+'''
 
 if (language() == "frCA"):#if language is French Canadian
     import language_frCA as text#import the language file
@@ -107,15 +109,16 @@ def defaultScreenSize():
 '''
 function to generate a login screen
 '''
-def loginScreen():
+
+def loginScreen(window):
         
-    window = tk.Tk()#create main windows
-    window.wm_title("pyPOS")#Title of windows
-    h = window.winfo_screenheight()
-    w = window.winfo_screenwidth()
+    #window = tk.Tk()#create main windows
+    #window.wm_title("pyPOS")#Title of windows
+    #h = window.winfo_screenheight()
+    #w = window.winfo_screenwidth()
     
-    window.geometry("{0}x{1}+0+0".format(w, h))
-    window.resizable(0, 0)
+    #window.geometry("{0}x{1}+0+0".format(w, h))
+    #window.resizable(0, 0)
     
     mainFrame = tk.Frame(window, borderwidth=1)
     
@@ -126,8 +129,9 @@ def loginScreen():
     usernameField = tk.Entry(mainFrame, textvariable=username, width=30)
     passwordLabel = tk.Label(mainFrame, text=text.login.password)
     passwordField = tk.Entry(mainFrame, textvariable=password, width=30, show="*")
-
-    loginButton = tk.Button(mainFrame, text=text.login.login)#create login button
+    
+    
+    loginButton = tk.Button(mainFrame, text=text.login.login, command= lambda: auth(username, password, mainFrame))#create login button
     quitButton = tk.Button(mainFrame, text=text.login.quit, command=window.quit)#create quit button
         
     usernameLabel.pack()
@@ -140,6 +144,14 @@ def loginScreen():
    
     mainFrame.pack()
     mainFrame.place(relx=.42, rely=.40)
-    window.mainloop()
-    window.destroy()
+    #window.mainloop()
     
+
+'''
+function to auth user
+'''
+def auth(user, passw, mainFrame):
+    print ""
+    mainFrame.destroy()
+    usernameLabel = tk.Label(mainFrametext="test")
+    usernameLabel.pack()
