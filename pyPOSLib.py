@@ -15,6 +15,7 @@ import sys#import system database
 import dbConfig
 import hashlib
 import datetime#import time library for dynamic hash generation
+import Tkinter as tk#import tkinter Library
 
 '''
 #function to get the current sys default language from database
@@ -42,18 +43,7 @@ def language():
     
     return data#return the language from the database result
 
-'''
-function to import the language file
-'''
-def importLanguage(language):
-    
-    if (language == "frCA"):#if language is French Canadian
-        import language_frCA as text#import the language file
-        
-    else:
-        print "Wrong Language"
-        sys.exit(1)
-        
+      
 '''
 function to encrypt password
 '''
@@ -71,4 +61,33 @@ def encPassword(clearPass):
     cryptPass = cryptPass + dynamicSalt[-42:]
     
     return cryptPass
+
+'''
+Function to get default screen size from  Database
+'''
+
+def defaultScreenSize():
+    try:
+        db = _mysql.connect(dbConfig.mysqlServer.server, dbConfig.mysqlServer.user, dbConfig.mysqlServer.password, dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        db.query("SELECT defaultH, defaultW FROM sysConfig")#request default system configuration from database
+        
+        size = db.use_result()#
+        data = []
+        try:
+            data = size.fetch_row()[0]#get the height adn width default
+            
+        except:
+            print "no data found"#if failed
+    
+    except _mysql.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if db:
+            db.close()
+    
+    return data#return the language from the database result
+    
     
