@@ -7,6 +7,7 @@ Created on 2015-01-20
 Language Pack for French Canada
 include all text from the Program
 '''
+from Tkinter import Variable
 '''
 class for text in login screen
 '''
@@ -22,4 +23,14 @@ class loginScreen:
         self.invalidUser = "Nom d'utilisateur inconnu"
         self.invalidPass = "Mot de passe invalide"
         
-login = loginScreen()
+login = loginScreen()#generate the login screen text Variable
+
+'''
+class for text in the menu screen
+'''
+class menuScreen:
+    
+    def __init__(self):
+        self.logout = "Déconnexion"#Logout Button
+        
+menu = menuScreen()

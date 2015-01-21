@@ -121,8 +121,8 @@ def defaultScreenSize():
 function to generate a login screen
 '''
 
-def loginScreen(window):
-        
+def loginScreen(window, mainFrame):
+    mainFrame.destroy()  
     mainFrame = tk.Frame(window, borderwidth=1)#genereate the main frame
     
     global username#set a global username variable
@@ -133,12 +133,16 @@ def loginScreen(window):
     messageLabel = tk.Label(mainFrame, text=text.login.message)
     usernameLabel = tk.Label(mainFrame, text=text.login.username)
     usernameField = tk.Entry(mainFrame, textvariable=username, width=30)
+    usernameField.bind('<Return>', lambda x: auth(window, mainFrame))#bind Return key when focus on username field
+    usernameField.focus()#set focuse on username first
     passwordLabel = tk.Label(mainFrame, text=text.login.password)
     passwordField = tk.Entry(mainFrame, textvariable=password, width=30, show="*")
-    
+    passwordField.bind('<Return>', lambda x: auth(window, mainFrame))#bind Return key when focus on password field
     
     loginButton = tk.Button(mainFrame, text=text.login.login, command= lambda: auth(window, mainFrame))#create login button
+    loginButton.bind('<Return>', lambda x: auth(window, mainFrame))#bind Return key when focus on username field
     quitButton = tk.Button(mainFrame, text=text.login.quit, command=window.quit)#create quit button
+    
     
     messageLabel.pack()   
     usernameLabel.pack()
@@ -205,9 +209,18 @@ def passCheck(dbPass, userPass):
 def menuScreen(window, mainFrame):
     
     if not connectedUser.logged:#if user acces this zone without beeing logged
-        loginScreen(window)#go back to login
+        loginScreen(window, mainFrame)#go back to login
         
     mainFrame.destroy()#reset the mainFrame for new use
+    
+    mainFrame = tk.Frame(window, borderwidth=1)#genereate the main frame
+    
+    logoutButton = tk.Button(mainFrame, text=text.menu.logout)#, image="./image/menu.logout.png")
+    
+    logoutButton.pack()
+    mainFrame.pack()
+    
+    
 
     
     

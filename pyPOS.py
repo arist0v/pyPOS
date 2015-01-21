@@ -34,7 +34,9 @@ w = window.winfo_screenwidth()
 window.geometry("{0}x{1}+0+0".format(w, h))
 window.resizable(0, 0)
 
-window.after(500, lib.loginScreen(window))
+mainFrame = tk.Frame(window, borderwidth=1)#genereate the main frame
+
+window.after(500, lib.loginScreen(window, mainFrame))
 
 window.mainloop()
 
