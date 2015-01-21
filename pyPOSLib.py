@@ -12,7 +12,8 @@ Created on 2015-01-20
 
 @author: arist0v
 '''
-import _mysql#import mysql connector library
+
+import MySQLdb as mdb#import mysqldb library
 import sys#import system database
 import dbConfig#import personnal lib dbconfig
 import hashlib#import hash library
@@ -40,26 +41,24 @@ connectedUser = loginInfo()
 '''
 def language():
     try:
-        db = _mysql.connect(dbConfig.mysqlServer.server, dbConfig.mysqlServer.user, dbConfig.mysqlServer.password, dbConfig.mysqlServer.database)#connection to mysqldb
         
-        db.query("SELECT * FROM sysConfig")#request default system configuration from database
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)
         
-        language = db.use_result()#
+        cursor = connection.cursor()
         
-        try:
-            data = language.fetch_row()[0][1]#get the language for the result
-        except:
-            print "no data found"#if failed
-    
+        cursor.execute("SELECT * FROM sysConfig")
+                
+        language = cursor.fetchall()[0][1]
+            
     except _mysql.Error, e:
         print "Error: {0} {1}".format(e.args[0], e.args[1])
         sys.exit(1)
             
     finally:
-        if db:
-            db.close()
-    
-    return data#return the language from the database result
+        if connection:
+            connection.close()
+            
+    return language#return the language from the database result
 '''
 import the specied language pack
 
@@ -89,34 +88,6 @@ def encPassword(clearPass):
     cryptPass = cryptPass + dynamicSalt[-42:]
     
     return cryptPass
-
-'''
-Function to get default screen size from  Database
-'''
-
-def defaultScreenSize():
-    try:
-        db = _mysql.connect(dbConfig.mysqlServer.server, dbConfig.mysqlServer.user, dbConfig.mysqlServer.password, dbConfig.mysqlServer.database)#connection to mysqldb
-        
-        db.query("SELECT defaultH, defaultW FROM sysConfig")#request default system configuration from database
-        
-        size = db.use_result()#
-        data = []
-        try:
-            data = size.fetch_row()[0]#get the height adn width default
-            
-        except:
-            print "no data found"#if failed
-    
-    except _mysql.Error, e:
-        print "Error: {0} {1}".format(e.args[0], e.args[1])
-        sys.exit(1)
-            
-    finally:
-        if db:
-            db.close()
-    
-    return data#return the language from the database result
 
 '''
 function to generate a login screen
@@ -167,16 +138,16 @@ def auth(window, mainFrame):
     userPass = encPassword(userPass)#convert password to hash
     
     try:
-        db = _mysql.connect(dbConfig.mysqlServer.server, dbConfig.mysqlServer.user, dbConfig.mysqlServer.password, dbConfig.mysqlServer.database)#connection to mysqldb
         
-        db.query("""SELECT Password, levelID FROM Technicien WHERE Username =  '{0}'""".format(user))#request user information from database
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
         
-        size = db.use_result()#
+        cursor= connection.cursor()
         
-        try:
-            data = size.fetch_row()[0]
-            
-        except:
+        cursor.execute("""SELECT Password, levelID FROM Technicien WHERE Username =  '{0}'""".format(user))#request user information from database
+        
+        userCheck = cursor.fetchone()#
+        
+        if (userCheck == None):
             tkm.showwarning("",text.login.invalidUser)#if no user found print warning
             return
     
@@ -185,13 +156,13 @@ def auth(window, mainFrame):
         sys.exit(1)
             
     finally:
-        if db:
-            db.close()    
+        if connection:
+            connection.close()    
     
-    if passCheck(data[0], userPass):#if password is valid
+    if passCheck(userCheck[0], userPass):#if password is valid
         connectedUser.logged = True#set the connectedUser status to true
         connectedUser.username = user#store username
-        connectedUser.level = data[1]#store admin level
+        connectedUser.level = userCheck[1]#store admin level
         menuScreen(window, mainFrame)#show menu
     
     
@@ -244,9 +215,43 @@ def userManager(window, bottomFrame, mainFrame):
     bottomFrame.destroy()#destroy the bottom frame
     
     bottomFrame = tk.Frame(mainFrame, borderwidth=1)#recreate a new bottom frame
+    
+    userList = tk.Listbox(bottomFrame)
+    
+    userList.grid(row=1, column=1, columnspan=10, sticky="W")
+    
+    users = getUserList()
+    for user in users:
+        userList.insert(1, user[0] +" "+ user[1])
         
     bottomFrame.pack()
     
+'''
+Function to get the list of all user in DB
+'''
+    
+def getUserList():
+    
+    data = []#empty table to store user list
+    
+    try:
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor = connection.cursor()
+        
+        cursor.execute("""SELECT Prenom, Nom FROM Technicien""")#request user information from database
+        
+        users = cursor.fetchall()# get list of all user      
+        
+    except _mysql.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+        
+        return users
     
     
     
