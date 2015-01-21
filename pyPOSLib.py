@@ -50,7 +50,7 @@ def language():
                 
         language = cursor.fetchall()[0][1]
             
-    except _mysql.Error, e:
+    except mdb.Error, e:
         print "Error: {0} {1}".format(e.args[0], e.args[1])
         sys.exit(1)
             
@@ -151,7 +151,7 @@ def auth(window, mainFrame):
             tkm.showwarning("",text.login.invalidUser)#if no user found print warning
             return
     
-    except _mysql.Error, e:
+    except mdb.Error, e:
         print "Error: {0} {1}".format(e.args[0], e.args[1])
         sys.exit(1)
             
@@ -243,7 +243,7 @@ def getUserList():
         
         users = cursor.fetchall()# get list of all user      
         
-    except _mysql.Error, e:
+    except mdb.Error, e:
         print "Error: {0} {1}".format(e.args[0], e.args[1])
         sys.exit(1)
             
