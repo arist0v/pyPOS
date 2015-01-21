@@ -11,7 +11,7 @@ Main file of the system
 '''
 import Tkinter as tk#import tkinter Library
 import pyPOSLib as lib#import the pyPOs library
-import sys#import sys library
+#import sys#import sys library
 
 '''
 global variable
@@ -20,12 +20,13 @@ global variable
 '''
 importing the sys default language
 '''
+'''
 if (lib.language() == "frCA"):#if language is French Canadian
     import language_frCA as text#import the language file
 else:
     print "Wrong Language"
     sys.exit(1)   
-
+'''
 window = tk.Tk()#create main windows
 window.wm_title("pyPOS")#Title of windows
 h = window.winfo_screenheight()

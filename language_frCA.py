@@ -32,5 +32,6 @@ class menuScreen:
     
     def __init__(self):
         self.logout = "Déconnexion"#Logout Button
+        self.user = "Utilisateur"#User menu button
         
 menu = menuScreen()

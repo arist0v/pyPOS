@@ -14,13 +14,12 @@ Created on 2015-01-20
 '''
 import _mysql#import mysql connector library
 import sys#import system database
-import dbConfig
-import hashlib
+import dbConfig#import personnal lib dbconfig
+import hashlib#import hash library
 import datetime#import time library for dynamic hash generation
 import Tkinter as tk#import tkinter Library
 import tkMessageBox as tkm#import tk message box
-from PIL import Image #import image library
-import ImageTk# as tki #import image tk library
+
 
 '''
 importing the sys default language
@@ -63,6 +62,8 @@ def language():
     return data#return the language from the database result
 '''
 import the specied language pack
+
+add new language by adding similar elif
 '''
 
 if (language() == "frCA"):#if language is French Canadian
@@ -70,8 +71,6 @@ if (language() == "frCA"):#if language is French Canadian
 else:
     print "Wrong Language"
     sys.exit(1)
-
-
       
 '''
 function to encrypt password
@@ -215,11 +214,18 @@ def menuScreen(window, mainFrame):
         
     mainFrame.destroy()#reset the mainFrame for new use
     
-    mainFrame = tk.Frame(window, borderwidth=1)#genereate the main frame
+    mainFrame = tk.Frame(window, borderwidth=1)#generate the main frame
+    upperFrame = tk.Frame(mainFrame, borderwidth=1)#genereate the upper frame
+    bottomFrame = tk.Frame(mainFrame, borderwidth=1)#genereate the bottom frame
+    
+    userButton = tk.Button(upperFrame, text=text.menu.user, command= lambda: userManager(window, bottomFrame, mainFrame))
+    logoutButton = tk.Button(upperFrame, text=text.menu.logout, command=lambda : sysLogout(window, mainFrame))
 
-    logoutButton = tk.Button(mainFrame, text=text.menu.logout, command=lambda : sysLogout(window, mainFrame))
-
-    logoutButton.pack()
+    userButton.grid(row=1, column=1)
+    logoutButton.grid(row=1, column=2)
+    
+    upperFrame.pack()
+    bottomFrame.pack()
     mainFrame.pack()
 '''
 function to logout from system
@@ -230,6 +236,19 @@ def sysLogout(window, mainFrame):
     connectedUser.logged = False#disconnect user
     connectedUser.username = ""#erase username
     loginScreen(window,mainFrame)#go back to login scren
+    
+'''
+function to access the user management menu
+'''
+def userManager(window, bottomFrame, mainFrame):
+    bottomFrame.destroy()#destroy the bottom frame
+    
+    bottomFrame = tk.Frame(mainFrame, borderwidth=1)#recreate a new bottom frame
+        
+    bottomFrame.pack()
+    
+    
+    
     
     
 
