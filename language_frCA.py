@@ -18,5 +18,8 @@ class loginScreen:
         self.login = "Connexion"#login button
         self.username = "Nom d'utilisateur :"#label for username textField
         self.password = "Mot de passe :"#label for password field
+        self.message = "Veuillez vous identifier"
+        self.invalidUser = "Nom d'utilisateur inconnu"
+        self.invalidPass = "Mot de passe invalide"
         
 login = loginScreen()

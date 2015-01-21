@@ -16,8 +16,6 @@ import sys#import sys library
 '''
 global variable
 '''
-username = "t"
-password = "s"
 
 '''
 importing the sys default language

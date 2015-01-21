@@ -18,6 +18,7 @@ import dbConfig
 import hashlib
 import datetime#import time library for dynamic hash generation
 import Tkinter as tk#import tkinter Library
+import tkMessageBox as tkm
 
 '''
 importing the sys default language
@@ -112,28 +113,29 @@ function to generate a login screen
 
 def loginScreen(window):
         
-    #window = tk.Tk()#create main windows
-    #window.wm_title("pyPOS")#Title of windows
-    #h = window.winfo_screenheight()
-    #w = window.winfo_screenwidth()
-    
-    #window.geometry("{0}x{1}+0+0".format(w, h))
-    #window.resizable(0, 0)
-    
     mainFrame = tk.Frame(window, borderwidth=1)
     
+    global username
     username = tk.StringVar()
+    global password
     password = tk.StringVar()
+    global loginErrorMsg
+    global messageErrorLabel
+    loginErrorMsg = ''
     
+    messageLabel = tk.Label(mainFrame, text=text.login.message)
+    messageErrorLabel = tk.Label(mainFrame, text=loginErrorMsg)
     usernameLabel = tk.Label(mainFrame, text=text.login.username)
     usernameField = tk.Entry(mainFrame, textvariable=username, width=30)
     passwordLabel = tk.Label(mainFrame, text=text.login.password)
     passwordField = tk.Entry(mainFrame, textvariable=password, width=30, show="*")
     
     
-    loginButton = tk.Button(mainFrame, text=text.login.login, command= lambda: auth(username, password, mainFrame))#create login button
+    loginButton = tk.Button(mainFrame, text=text.login.login, command= lambda: auth())#create login button
     quitButton = tk.Button(mainFrame, text=text.login.quit, command=window.quit)#create quit button
-        
+    
+    messageLabel.pack() 
+    messageErrorLabel.pack()  
     usernameLabel.pack()
     usernameField.pack()
     passwordLabel.pack()
@@ -141,17 +143,63 @@ def loginScreen(window):
     
     loginButton.pack(side="left")
     quitButton.pack(side="right")
-   
+    print loginErrorMsg
     mainFrame.pack()
     mainFrame.place(relx=.42, rely=.40)
-    #window.mainloop()
-    
+   
 
 '''
 function to auth user
 '''
-def auth(user, passw, mainFrame):
-    print ""
-    mainFrame.destroy()
-    usernameLabel = tk.Label(mainFrametext="test")
-    usernameLabel.pack()
+def auth():
+    user = username.get()
+    userPass = password.get()
+    userPass = encPassword(userPass)
+    
+    try:
+        db = _mysql.connect(dbConfig.mysqlServer.server, dbConfig.mysqlServer.user, dbConfig.mysqlServer.password, dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        db.query("""SELECT Password FROM Technicien WHERE Username =  '{0}'""".format(user))#request user information from database
+        
+        size = db.use_result()#
+        
+        try:
+            data = size.fetch_row()[0]#get the height adn width default
+            
+        except:
+            tkm.showwarning("",text.login.invalidUser)#if failed print a message box
+            if db:
+                db.close()
+            return
+    
+    except _mysql.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if db:
+            db.close()
+    try:
+        dbPass = data[0]
+    except:
+        print ""
+    
+    if passCheck(dbPass, userPass):
+        return 1
+    
+    
+
+'''
+function to compare user provided password versus db password
+'''
+
+def passCheck(dbPass, userPass):
+    
+    if (userPass[:-42] == dbPass[:-42]):#if password minus dynamic salt is identic
+        return 1#return true
+    else:
+        tkm.showwarning("", text.login.invalidPass)#else show warning invalid password
+
+
+    
+    
