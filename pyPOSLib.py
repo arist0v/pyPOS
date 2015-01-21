@@ -1,4 +1,4 @@
-# -*- coding: latin1 -*-
+# -*- coding: utf-8 -*-
 #!/usr/bin/python
 '''
 Created on 2015-01-20
@@ -18,7 +18,9 @@ import dbConfig
 import hashlib
 import datetime#import time library for dynamic hash generation
 import Tkinter as tk#import tkinter Library
-import tkMessageBox as tkm
+import tkMessageBox as tkm#import tk message box
+from PIL import Image #import image library
+import ImageTk# as tki #import image tk library
 
 '''
 importing the sys default language
@@ -214,11 +216,20 @@ def menuScreen(window, mainFrame):
     mainFrame.destroy()#reset the mainFrame for new use
     
     mainFrame = tk.Frame(window, borderwidth=1)#genereate the main frame
-    
-    logoutButton = tk.Button(mainFrame, text=text.menu.logout)#, image="./image/menu.logout.png")
-    
+
+    logoutButton = tk.Button(mainFrame, text=text.menu.logout, command=lambda : sysLogout(window, mainFrame))
+
     logoutButton.pack()
     mainFrame.pack()
+'''
+function to logout from system
+'''
+
+def sysLogout(window, mainFrame):
+    connectedUser.level = 0#set user level to 0 
+    connectedUser.logged = False#disconnect user
+    connectedUser.username = ""#erase username
+    loginScreen(window,mainFrame)#go back to login scren
     
     
 

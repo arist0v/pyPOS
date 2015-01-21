@@ -1,5 +1,5 @@
 eclipse.preferences.version=1
-encoding/dbConfig.py=latin1
-encoding/language_frCA.py=latin1
-encoding/pyPOS.py=latin1
-encoding/pyPOSLib.py=latin1
+encoding/dbConfig.py=utf-8
+encoding/language_frCA.py=utf-8
+encoding/pyPOS.py=utf-8
+encoding/pyPOSLib.py=utf-8

@@ -1,4 +1,4 @@
-# -*- coding: latin1 -*-
+# -*- coding: utf-8 -*-
 #!/usr/bin/python
 '''
 Created on 2015-01-20
@@ -7,7 +7,7 @@ Created on 2015-01-20
 Language Pack for French Canada
 include all text from the Program
 '''
-from Tkinter import Variable
+
 '''
 class for text in login screen
 '''
@@ -31,6 +31,6 @@ class for text in the menu screen
 class menuScreen:
     
     def __init__(self):
-        self.logout = "Déconnexion"#Logout Button
+        self.logout = "DÃ©connexion"#Logout Button
         
 menu = menuScreen()
