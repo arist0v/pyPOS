@@ -24,11 +24,7 @@ if (lib.language() == "frCA"):#if language is French Canadian
     import language_frCA as text#import the language file
 else:
     print "Wrong Language"
-    sys.exit(1)
-
-#lib.importLanguage(lib.language())#import the correct language file library
-
-
+    sys.exit(1)   
 
 window = tk.Tk()#create main windows
 window.wm_title("pyPOS")#Title of windows
@@ -38,7 +34,7 @@ w = window.winfo_screenwidth()
 window.geometry("{0}x{1}+0+0".format(w, h))
 window.resizable(0, 0)
 
-window.after(500 ,lib.loginScreen(window))
+window.after(500, lib.loginScreen(window))
 
 window.mainloop()
 

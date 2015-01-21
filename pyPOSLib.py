@@ -24,6 +24,16 @@ import tkMessageBox as tkm
 importing the sys default language
 '''
 
+class loginInfo:
+    '''Class who contain all login info'''
+    def __init__(self):
+        
+        self.logged = False
+        self.username = ""
+        self.level = 0
+        
+connectedUser = loginInfo()
+
 '''
 #function to get the current sys default language from database
 '''
@@ -113,29 +123,24 @@ function to generate a login screen
 
 def loginScreen(window):
         
-    mainFrame = tk.Frame(window, borderwidth=1)
+    mainFrame = tk.Frame(window, borderwidth=1)#genereate the main frame
     
-    global username
+    global username#set a global username variable
     username = tk.StringVar()
-    global password
+    global password#set a global password variable
     password = tk.StringVar()
-    global loginErrorMsg
-    global messageErrorLabel
-    loginErrorMsg = ''
-    
+        
     messageLabel = tk.Label(mainFrame, text=text.login.message)
-    messageErrorLabel = tk.Label(mainFrame, text=loginErrorMsg)
     usernameLabel = tk.Label(mainFrame, text=text.login.username)
     usernameField = tk.Entry(mainFrame, textvariable=username, width=30)
     passwordLabel = tk.Label(mainFrame, text=text.login.password)
     passwordField = tk.Entry(mainFrame, textvariable=password, width=30, show="*")
     
     
-    loginButton = tk.Button(mainFrame, text=text.login.login, command= lambda: auth())#create login button
+    loginButton = tk.Button(mainFrame, text=text.login.login, command= lambda: auth(window, mainFrame))#create login button
     quitButton = tk.Button(mainFrame, text=text.login.quit, command=window.quit)#create quit button
     
-    messageLabel.pack() 
-    messageErrorLabel.pack()  
+    messageLabel.pack()   
     usernameLabel.pack()
     usernameField.pack()
     passwordLabel.pack()
@@ -143,33 +148,31 @@ def loginScreen(window):
     
     loginButton.pack(side="left")
     quitButton.pack(side="right")
-    print loginErrorMsg
     mainFrame.pack()
     mainFrame.place(relx=.42, rely=.40)
+    
    
 
 '''
 function to auth user
 '''
-def auth():
-    user = username.get()
-    userPass = password.get()
-    userPass = encPassword(userPass)
+def auth(window, mainFrame):
+    user = username.get()#get the global username from field
+    userPass = password.get()#get the global password from field
+    userPass = encPassword(userPass)#convert password to hash
     
     try:
         db = _mysql.connect(dbConfig.mysqlServer.server, dbConfig.mysqlServer.user, dbConfig.mysqlServer.password, dbConfig.mysqlServer.database)#connection to mysqldb
         
-        db.query("""SELECT Password FROM Technicien WHERE Username =  '{0}'""".format(user))#request user information from database
+        db.query("""SELECT Password, levelID FROM Technicien WHERE Username =  '{0}'""".format(user))#request user information from database
         
         size = db.use_result()#
         
         try:
-            data = size.fetch_row()[0]#get the height adn width default
+            data = size.fetch_row()[0]
             
         except:
-            tkm.showwarning("",text.login.invalidUser)#if failed print a message box
-            if db:
-                db.close()
+            tkm.showwarning("",text.login.invalidUser)#if no user found print warning
             return
     
     except _mysql.Error, e:
@@ -178,14 +181,13 @@ def auth():
             
     finally:
         if db:
-            db.close()
-    try:
-        dbPass = data[0]
-    except:
-        print ""
+            db.close()    
     
-    if passCheck(dbPass, userPass):
-        return 1
+    if passCheck(data[0], userPass):#if password is valid
+        connectedUser.logged = True#set the connectedUser status to true
+        connectedUser.username = user#store username
+        connectedUser.level = data[1]#store admin level
+        menuScreen(window, mainFrame)#show menu
     
     
 
@@ -200,6 +202,12 @@ def passCheck(dbPass, userPass):
     else:
         tkm.showwarning("", text.login.invalidPass)#else show warning invalid password
 
+def menuScreen(window, mainFrame):
+    
+    if not connectedUser.logged:#if user acces this zone without beeing logged
+        loginScreen(window)#go back to login
+        
+    mainFrame.destroy()#reset the mainFrame for new use
 
     
     
