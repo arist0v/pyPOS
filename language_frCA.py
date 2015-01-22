@@ -54,5 +54,16 @@ class userManagerScreen:
         self.userListLabel = "Liste des utilisateurs"#label over the userlist
         self.firstNameLabel = "Prénom :"
         self.lastNameLabel = "Nom :"
+        self.emailLabel = "Courriel :"
+        self.levelLabel = "Type :"
+        self.levelUser = "Utilisateur"
+        self.levelManager = "Gérant"
+        self.levelAdmin = "Administrateur"
+        self.oldPass = "Mot de passe actuel :"
+        self.newPass = "Mot de Passe :"
+        self.confirmPass = "Confirmez le mot de passe :"
+        self.changePassButton = "Modifiez le mot de passe"
+        self.saveButton = "Sauvegarder"
+        self.savePopUp = "Changement Sauvegardé"
         
 userManager = userManagerScreen()

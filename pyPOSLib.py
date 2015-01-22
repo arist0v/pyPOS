@@ -8,6 +8,7 @@ DB configuration for the program
 ''''''
 from gtk._gtk import SIDE_LEFT
 from gtk._gtk import SIDE_RIGHT
+from Tkinter import OptionMenu
 Created on 2015-01-20
 
 @author: arist0v
@@ -133,9 +134,7 @@ def showLicence():
     scroll.configure(command = licenceText.yview)    
     
     licenceText.pack()
-    quitButton.pack()
-    
-    
+    quitButton.pack()     
 
 '''
 function to generate a login screen
@@ -347,11 +346,8 @@ fonction to print data of selected user
 '''
 def userData(user):
     
-    state="readonly"
-    
-    if (connectedUser.level > 1):
-        state="normal"
-    
+    state="disabled"#defautl stat for edit user
+      
     try:
         rightSubFrame.destroy()#try to destroy right frame if exist
     except:
@@ -365,6 +361,9 @@ def userData(user):
     
     firstNameField = tk.StringVar()
     lastNameField = tk.StringVar()
+    emailField = tk.StringVar()
+    levelField = tk.StringVar()
+    oldPassField = tk.StringVar()
     
     try:
         connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
@@ -385,8 +384,13 @@ def userData(user):
         if connection:
             connection.close()
             
+    if (connectedUser.level > 5 or connectedUser.username == userData[4]):#if user is admin or itself
+        state="normal"
+            
     firstNameLabel = tk.Label(rightSubFrame, text=text.userManager.firstNameLabel)
     lastNameLabel = tk.Label(rightSubFrame, text=text.userManager.lastNameLabel)
+    emailLabel = tk.Label(rightSubFrame, text=text.userManager.emailLabel)
+    levelLabel = tk.Label(rightSubFrame, text=text.userManager.levelLabel)
     
     firstNameText = tk.Entry(rightSubFrame, textvariable=firstNameField, bg="white", width=30)
     firstNameText.insert(0, userData[1])
@@ -396,14 +400,77 @@ def userData(user):
     lastNameText.insert(0, userData[2])
     lastNameText.configure(state=state)
     
+    emailText = tk.Entry(rightSubFrame, textvariable=emailField, bg="white", width=30)
+    emailText.insert(0, userData[3])
+    emailText.configure(state=state)
+    
+    levelMenu = tk.OptionMenu(rightSubFrame, levelField, text.userManager.levelUser, text.userManager.levelManager, text.userManager.levelAdmin)
+    levelMenu["menu"].config(bg="white")
+    levelMenu.configure(width=26, bg="white")
+    
+    changePassButton = tk.Button(rightSubFrame, text=text.userManager.changePassButton)
+    changePassButton.config(state=state)
+    saveButton = tk.Button(rightSubFrame, text=text.userManager.saveButton, command = lambda: saveUserData(firstNameField.get(), lastNameField.get(), emailField.get(), levelField.get(), userData[4]))
+    saveButton.config(state=state)
+            
+    if (userData[6] == 2):
+        levelField.set(text.userManager.levelManager)
+    elif (userData[6] == 3):
+        levelField.set(text.userManager.levelAdmin)
+    else:
+        levelField.set(text.userManager.levelUser)
+        
+    levelMenu.configure(state=state)
+    
     firstNameLabel.grid(row=1, column=1)
     firstNameText.grid(row=1,column=2)
     
     lastNameLabel.grid(row=1, column=3, padx=10)
     lastNameText.grid(row=1, column=4)
     
+    emailLabel.grid(row=2, column=1, pady=(20,0))
+    emailText.grid(row=2, column=2, pady=(20,0))
+    
+    levelLabel.grid(row=2, column=3, pady=(20,0))
+    levelMenu.grid(row=2, column=4, pady=(20,0))
+    
+    changePassButton.grid(row=3, column=1, columnspan=2, sticky="w", pady=(20,0))
+    saveButton.grid(row=3, column=3, columnspan=2, sticky="e", pady=(20,0))
+    
     rightSubFrame.pack(fill="both", pady=25)
+    
+'''
+function to change save to userData
+'''
+def saveUserData(firstName, lastName, email, adminLevel, username):
+    
+    if (adminLevel == text.userManager.levelAdmin):#convert adminLevel to equivalent ID
+        levelID = 3
+    elif (adminLevel.encode("utf-8") == text.userManager.levelManager):
+        levelID = 2
+    else:
+        levelID = 1
         
+    sql="""UPDATE Technicien SET Prenom='{0}',Nom='{1}', Email='{2}', levelID='{3}' WHERE Username='{4}'""".format(firstName.encode("utf-8"), lastName.encode("utf-8"), email.encode("utf-8"), levelID, username.encode("utf-8"))
+    
+    try:
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor = connection.cursor()
+        
+        cursor.execute(sql)#send update to database
+        
+        connection.commit()
+
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+            
+    tkm.showinfo("", text.userManager.savePopUp)
         
     
     
