@@ -317,6 +317,11 @@ fonction to print data of selected user
 '''
 def userData(user):
     
+    state="readonly"
+    
+    if (connectedUser.level > 1):
+        state="normal"
+    
     try:
         rightSubFrame.destroy()#try to destroy right frame if exist
     except:
@@ -355,9 +360,11 @@ def userData(user):
     
     firstNameText = tk.Entry(rightSubFrame, textvariable=firstNameField, bg="white", width=30)
     firstNameText.insert(0, userData[1])
+    firstNameText.configure(state=state)
     
     lastNameText = tk.Entry(rightSubFrame, textvariable=lastNameField, bg="white", width=30)
     lastNameText.insert(0, userData[2])
+    lastNameText.configure(state=state)
     
     firstNameLabel.grid(row=1, column=1)
     firstNameText.grid(row=1,column=2)
