@@ -283,7 +283,7 @@ def userManager():
     
     userListLabel.grid(row=1, column=1)
     userList.grid(row=2, column=1, columnspan=10)
-    rightSubFrame.pack(fill="both", pady=25)
+    rightSubFrame.pack(fill="both", pady=25, side="right")
     leftSubFrame.pack(side="left", anchor="w", fill="y")   
     bottomFrame.pack(side="bottom", fill="x")
     
@@ -323,12 +323,13 @@ def userData(user):
         pass
     
     global rightSubFrame
-    rightSubFrame = tk.Frame(bottomFrame, bg="red")
+    rightSubFrame = tk.Frame(bottomFrame)
     
     firstName = user.split(" ")[0]
     lastName = user.split(" ")[1]
     
     firstNameField = tk.StringVar()
+    lastNameField = tk.StringVar()
     
     try:
         connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
@@ -350,12 +351,19 @@ def userData(user):
             connection.close()
             
     firstNameLabel = tk.Label(rightSubFrame, text=text.userManager.firstNameLabel)
+    lastNameLabel = tk.Label(rightSubFrame, text=text.userManager.lastNameLabel)
     
     firstNameText = tk.Entry(rightSubFrame, textvariable=firstNameField, bg="white", width=30)
     firstNameText.insert(0, userData[1])
     
+    lastNameText = tk.Entry(rightSubFrame, textvariable=lastNameField, bg="white", width=30)
+    lastNameText.insert(0, userData[2])
+    
     firstNameLabel.grid(row=1, column=1)
     firstNameText.grid(row=1,column=2)
+    
+    lastNameLabel.grid(row=1, column=3, padx=10)
+    lastNameText.grid(row=1, column=4)
     
     rightSubFrame.pack(fill="both", pady=25)
         
