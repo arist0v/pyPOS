@@ -35,3 +35,11 @@ class menuScreen:
         self.user = "Utilisateur"#User menu button
         
 menu = menuScreen()
+
+class userManagerScreen:
+    
+    def __init__(self):
+        self.userListLabel= "Liste des utilisateurs"#label over the userlist
+        self.firstNameLabel= "Prenom"
+        
+userManager = userManagerScreen()

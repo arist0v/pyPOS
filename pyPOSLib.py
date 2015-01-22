@@ -90,11 +90,36 @@ def encPassword(clearPass):
     return cryptPass
 
 '''
+function to start the program
+'''
+
+def startProgram():
+    global window
+    window = tk.Tk()#create main windows
+    window.wm_title("pyPOS")#Title of windows
+    h = window.winfo_screenheight()
+    w = window.winfo_screenwidth()
+    
+    window.geometry("{0}x{1}+0+0".format(w, h))
+    window.resizable(0, 0)
+
+
+    window.after(500, loginScreen())
+
+    window.mainloop()
+
+'''
 function to generate a login screen
 '''
 
-def loginScreen(window, mainFrame):
-    mainFrame.destroy()  
+def loginScreen():    
+    
+    try:
+        mainFrame.destroy()
+    except:
+        pass           
+        
+    global mainFrame  
     mainFrame = tk.Frame(window, borderwidth=1)#genereate the main frame
     
     global username#set a global username variable
@@ -104,15 +129,15 @@ def loginScreen(window, mainFrame):
         
     messageLabel = tk.Label(mainFrame, text=text.login.message)
     usernameLabel = tk.Label(mainFrame, text=text.login.username)
-    usernameField = tk.Entry(mainFrame, textvariable=username, width=30)
-    usernameField.bind('<Return>', lambda x: auth(window, mainFrame))#bind Return key when focus on username field
+    usernameField = tk.Entry(mainFrame, textvariable=username, width=30, bg="white")
+    usernameField.bind('<Return>', lambda x: auth())#bind Return key when focus on username field
     usernameField.focus()#set focuse on username first
     passwordLabel = tk.Label(mainFrame, text=text.login.password)
-    passwordField = tk.Entry(mainFrame, textvariable=password, width=30, show="*")
-    passwordField.bind('<Return>', lambda x: auth(window, mainFrame))#bind Return key when focus on password field
+    passwordField = tk.Entry(mainFrame, textvariable=password, width=30, show="*", bg="white")
+    passwordField.bind('<Return>', lambda x: auth())#bind Return key when focus on password field
     
-    loginButton = tk.Button(mainFrame, text=text.login.login, command= lambda: auth(window, mainFrame))#create login button
-    loginButton.bind('<Return>', lambda x: auth(window, mainFrame))#bind Return key when focus on username field
+    loginButton = tk.Button(mainFrame, text=text.login.login, command= lambda: auth())#create login button
+    loginButton.bind('<Return>', lambda x: auth())#bind Return key when focus on username field
     quitButton = tk.Button(mainFrame, text=text.login.quit, command=window.quit)#create quit button
     
     
@@ -132,7 +157,7 @@ def loginScreen(window, mainFrame):
 '''
 function to auth user
 '''
-def auth(window, mainFrame):
+def auth():
     user = username.get()#get the global username from field
     userPass = password.get()#get the global password from field
     userPass = encPassword(userPass)#convert password to hash
@@ -163,7 +188,7 @@ def auth(window, mainFrame):
         connectedUser.logged = True#set the connectedUser status to true
         connectedUser.username = user#store username
         connectedUser.level = userCheck[1]#store admin level
-        menuScreen(window, mainFrame)#show menu
+        menuScreen()#show menu
     
     
 
@@ -178,19 +203,27 @@ def passCheck(dbPass, userPass):
     else:
         tkm.showwarning("", text.login.invalidPass)#else show warning invalid password
 
-def menuScreen(window, mainFrame):
+def menuScreen():
     
     if not connectedUser.logged:#if user acces this zone without beeing logged
-        loginScreen(window, mainFrame)#go back to login
+        loginScreen()#go back to login
         
-    mainFrame.destroy()#reset the mainFrame for new use
+    try:
+        mainFrame.destroy()#reset mainFrame
+    except:
+        pass   
     
+    global mainFrame
     mainFrame = tk.Frame(window, borderwidth=1)#generate the main frame
+    
+    global upperFrame
     upperFrame = tk.Frame(mainFrame, borderwidth=1)#genereate the upper frame
+    
+    global bottomFrame
     bottomFrame = tk.Frame(mainFrame, borderwidth=1)#genereate the bottom frame
     
-    userButton = tk.Button(upperFrame, text=text.menu.user, command= lambda: userManager(window, bottomFrame, mainFrame))
-    logoutButton = tk.Button(upperFrame, text=text.menu.logout, command=lambda : sysLogout(window, mainFrame))
+    userButton = tk.Button(upperFrame, text=text.menu.user, command= lambda: userManager())
+    logoutButton = tk.Button(upperFrame, text=text.menu.logout, command=lambda : sysLogout())
 
     userButton.grid(row=1, column=1)
     logoutButton.grid(row=1, column=2)
@@ -202,28 +235,54 @@ def menuScreen(window, mainFrame):
 function to logout from system
 '''
 
-def sysLogout(window, mainFrame):
+def sysLogout():
     connectedUser.level = 0#set user level to 0 
     connectedUser.logged = False#disconnect user
     connectedUser.username = ""#erase username
-    loginScreen(window,mainFrame)#go back to login scren
+    loginScreen()#go back to login scren
     
 '''
 function to access the user management menu
 '''
-def userManager(window, bottomFrame, mainFrame):
-    bottomFrame.destroy()#destroy the bottom frame
+def userManager():
     
+    try:
+        bottomFrame.destroy()
+    except:
+        pass
+    
+    try:
+        rigthSubFrame.destroy()
+    except:
+        pass
+    
+    try:
+        leftSubFrame.destroy()
+    except:
+        pass
+    
+    global bottomFrame  
     bottomFrame = tk.Frame(mainFrame, borderwidth=1)#recreate a new bottom frame
     
-    userList = tk.Listbox(bottomFrame)
+    global leftSubFrame
+    leftSubFrame = tk.Frame(bottomFrame, borderwidth=1)
     
-    userList.grid(row=1, column=1, columnspan=10, sticky="W")
+    global rigthSubFrame
+    rigthSubFrame = tk.Frame(bottomFrame, borderwidth=1)
     
+    userList = tk.Listbox(leftSubFrame, bg="white")
+    userListLabel = tk.Label(leftSubFrame, text=text.userManager.userListLabel)
+      
     users = getUserList()
-    for user in users:
-        userList.insert(1, user[0] +" "+ user[1])
-        
+    for user in users:#add each table to list
+        userList.insert(0, user[0] +" "+ user[1])
+      
+    userList.bind('<<ListboxSelect>>', lambda x: userData(userList.get(userList.curselection())))
+    
+    userListLabel.grid(row=1, column=1)
+    userList.grid(row=2, column=1, columnspan=10, sticky="W")
+    rigthSubFrame.pack()
+    leftSubFrame.pack()   
     bottomFrame.pack()
     
 '''
@@ -231,8 +290,6 @@ Function to get the list of all user in DB
 '''
     
 def getUserList():
-    
-    data = []#empty table to store user list
     
     try:
         connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
@@ -253,7 +310,47 @@ def getUserList():
         
         return users
     
+'''
+fonction to print data of selected user
+'''
+def userData(user):
     
+    try:
+        rigthSubFrame.destroy()
+    except:
+        pass
+    
+    global rightSubFrame
+    rigthSubFrame = tk.Frame(bottomFrame)
+    
+    firstName = user.split(" ")[0]
+    lastName = user.split(" ")[1]
+    
+    try:
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor = connection.cursor()
+        sql = """SELECT * FROM Technicien WHERE Nom = '{0}' AND Prenom = '{1}'""".format(lastName, firstName)
+        
+        cursor.execute(sql)#request user information from database
+        
+        userData = cursor.fetchone()# get list of all user    
+      
+        
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+            
+    #firstNameLabel = tk.Label(rigthSubFrame, text=text.userManager.firstNameLabel)
+    
+    #firstNameLabel.grid(row=1, column=1)
+    rigthSubFrame.pack()
+        
+        
     
     
 
