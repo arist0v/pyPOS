@@ -159,13 +159,16 @@ def loginScreen():
     usernameLabel = tk.Label(mainFrame, text=text.login.username)
     usernameField = tk.Entry(mainFrame, textvariable=username, width=30, bg="white")
     usernameField.bind('<Return>', lambda x: auth())#bind Return key when focus on username field
+    usernameField.bind('<KP_Enter>', lambda x: auth())#numpad enter
     usernameField.focus()#set focuse on username first
     passwordLabel = tk.Label(mainFrame, text=text.login.password)
     passwordField = tk.Entry(mainFrame, textvariable=password, width=30, show="*", bg="white")
     passwordField.bind('<Return>', lambda x: auth())#bind Return key when focus on password field
+    passwordField.bind('<KP_Enter>', lambda x: auth())#numpad enter
     
     loginButton = tk.Button(mainFrame, text=text.login.login, command= lambda: auth())#create login button
     loginButton.bind('<Return>', lambda x: auth())#bind Return key when focus on username field
+    loginButton.bind('<KP_Enter>', lambda x: auth())#numpad enter
     quitButton = tk.Button(mainFrame, text=text.login.quit, command=window.quit)#create quit button
     licenceLabel = tk.Label(mainFrame, text=text.login.licence)
     licenceLabel.bind("<Button-1>",lambda x: showLicence())
@@ -408,7 +411,7 @@ def userData(user):
     levelMenu["menu"].config(bg="white")
     levelMenu.configure(width=26, bg="white")
     
-    changePassButton = tk.Button(rightSubFrame, text=text.userManager.changePassButton)
+    changePassButton = tk.Button(rightSubFrame, text=text.userManager.changePassButton, command= lambda: changeUserPass())
     changePassButton.config(state=state)
     saveButton = tk.Button(rightSubFrame, text=text.userManager.saveButton, command = lambda: saveUserData(firstNameField.get(), lastNameField.get(), emailField.get(), levelField.get(), userData[4]))
     saveButton.config(state=state)
@@ -471,9 +474,30 @@ def saveUserData(firstName, lastName, email, adminLevel, username):
             connection.close()
             
     tkm.showinfo("", text.userManager.savePopUp)
-        
     
+'''
+function to change the user password
+'''
+   
+def changeUserPass():
     
-
+    changePassScreen = tk.Toplevel(window)#create a popup window
+    changePassScreen.title(text.changePassword.windowTitle)
+    
+    changePassLabel = tk.Label(changePassScreen, text=text.changePassword.instructionLabel, wraplength=300)#label containing instruction
+    oldPassLabel = tk.Label(changePassScreen, text=text.changePassword.oldPass)#old pass label
+    
+    oldPassEntry = tk.Entry(changePassScreen, bg="white", width=30, show="*")
+    
+    changeButton = tk.Button(changePassScreen, text=text.changePassword.changeButton)
+    cancelButton = tk.Button(changePassScreen, text=text.changePassword.cancelButton, command=lambda : changePassScreen.destroy())
+    
+    changePassLabel.grid(row=1, column=1, columnspan=2)
+    
+    oldPassLabel.grid(row=2, column=1, pady=(20,0), padx=(5,0))
+    oldPassEntry.grid(row=2, column=2, pady=(20,0), padx=5)
+    
+    changeButton.grid(row=5, column=1, pady=(20,0))
+    cancelButton.grid(row=5, column=2, pady=(20,0))
     
     

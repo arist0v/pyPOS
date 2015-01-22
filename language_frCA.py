@@ -59,11 +59,21 @@ class userManagerScreen:
         self.levelUser = "Utilisateur"
         self.levelManager = "Gérant"
         self.levelAdmin = "Administrateur"
-        self.oldPass = "Mot de passe actuel :"
-        self.newPass = "Mot de Passe :"
-        self.confirmPass = "Confirmez le mot de passe :"
         self.changePassButton = "Modifiez le mot de passe"
         self.saveButton = "Sauvegarder"
         self.savePopUp = "Changement Sauvegardé"
         
 userManager = userManagerScreen()
+
+class changePasswordScreen:
+    
+    def __init__(self):
+        self.windowTitle = "Modification du mot de passe"
+        self.cancelButton = "Annuler"
+        self.changeButton = "Modifier"
+        self.instructionLabel = """Pour modifier le mot de passe, veuillez entrer votre ancien mot de passe, ou si vous modifiez le mot de passe d'un autre utilisateur, entrez votre propre mot de passe."""
+        self.oldPass = "Mot de passe actuel :"
+        self.newPass = "Mot de Passe :"
+        self.confirmPass = "Confirmez le mot de passe :"
+        
+changePassword = changePasswordScreen()
