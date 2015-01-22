@@ -97,6 +97,8 @@ def startProgram():
     global window
     window = tk.Tk()#create main windows
     window.wm_title("pyPOS")#Title of windows
+    #global h#global height
+    #global w#blobal width
     h = window.winfo_screenheight()
     w = window.winfo_screenwidth()
     
@@ -115,12 +117,12 @@ function to generate a login screen
 def loginScreen():    
     
     try:
-        mainFrame.destroy()
+        mainFrame.destroy()#try to destroy mainframe(if exist)
     except:
         pass           
         
     global mainFrame  
-    mainFrame = tk.Frame(window, borderwidth=1)#genereate the main frame
+    mainFrame = tk.Frame(window)#genereate the main frame
     
     global username#set a global username variable
     username = tk.StringVar()
@@ -149,7 +151,7 @@ def loginScreen():
     
     loginButton.pack(side="left")
     quitButton.pack(side="right")
-    mainFrame.pack()
+    mainFrame.pack(fill="both")
     mainFrame.place(relx=.42, rely=.40)
     
    
@@ -214,23 +216,23 @@ def menuScreen():
         pass   
     
     global mainFrame
-    mainFrame = tk.Frame(window, borderwidth=1)#generate the main frame
+    mainFrame = tk.Frame(window)#generate the main frame
     
     global upperFrame
-    upperFrame = tk.Frame(mainFrame, borderwidth=1)#genereate the upper frame
+    upperFrame = tk.Frame(mainFrame, borderwidth=5)#genereate the upper frame
     
     global bottomFrame
-    bottomFrame = tk.Frame(mainFrame, borderwidth=1)#genereate the bottom frame
+    bottomFrame = tk.Frame(mainFrame)#genereate the bottom frame
     
-    userButton = tk.Button(upperFrame, text=text.menu.user, command= lambda: userManager())
-    logoutButton = tk.Button(upperFrame, text=text.menu.logout, command=lambda : sysLogout())
+    userButton = tk.Button(upperFrame, text=text.menu.user, command= lambda: userManager(), borderwidth=1)
+    logoutButton = tk.Button(upperFrame, text=text.menu.logout, command=lambda : sysLogout(), borderwidth=1)
 
     userButton.grid(row=1, column=1)
     logoutButton.grid(row=1, column=2)
     
-    upperFrame.pack()
-    bottomFrame.pack()
-    mainFrame.pack()
+    upperFrame.pack(side="top", fill="x")
+    bottomFrame.pack(side="bottom", fill="x")
+    mainFrame.pack(fill="both")
 '''
 function to logout from system
 '''
@@ -247,28 +249,28 @@ function to access the user management menu
 def userManager():
     
     try:
-        bottomFrame.destroy()
+        bottomFrame.destroy()#try to destroy bottomFram if exist
     except:
         pass
     
     try:
-        rigthSubFrame.destroy()
+        rightSubFrame.destroy()#try to destroy right frame if exist
     except:
         pass
     
     try:
-        leftSubFrame.destroy()
+        leftSubFrame.destroy()#try to destroy left fream if exist
     except:
         pass
     
     global bottomFrame  
-    bottomFrame = tk.Frame(mainFrame, borderwidth=1)#recreate a new bottom frame
+    bottomFrame = tk.Frame(mainFrame)#recreate a new bottom frame
     
     global leftSubFrame
-    leftSubFrame = tk.Frame(bottomFrame, borderwidth=1)
+    leftSubFrame = tk.Frame(bottomFrame, borderwidth=5)
     
-    global rigthSubFrame
-    rigthSubFrame = tk.Frame(bottomFrame, borderwidth=1)
+    global rightSubFrame
+    rightSubFrame = tk.Frame(bottomFrame)
     
     userList = tk.Listbox(leftSubFrame, bg="white")
     userListLabel = tk.Label(leftSubFrame, text=text.userManager.userListLabel)
@@ -280,10 +282,10 @@ def userManager():
     userList.bind('<<ListboxSelect>>', lambda x: userData(userList.get(userList.curselection())))
     
     userListLabel.grid(row=1, column=1)
-    userList.grid(row=2, column=1, columnspan=10, sticky="W")
-    rigthSubFrame.pack()
-    leftSubFrame.pack()   
-    bottomFrame.pack()
+    userList.grid(row=2, column=1, columnspan=10)
+    rightSubFrame.pack(fill="both", pady=25)
+    leftSubFrame.pack(side="left", anchor="w", fill="y")   
+    bottomFrame.pack(side="bottom", fill="x")
     
 '''
 Function to get the list of all user in DB
@@ -316,15 +318,17 @@ fonction to print data of selected user
 def userData(user):
     
     try:
-        rigthSubFrame.destroy()
+        rightSubFrame.destroy()#try to destroy right frame if exist
     except:
         pass
     
     global rightSubFrame
-    rigthSubFrame = tk.Frame(bottomFrame)
+    rightSubFrame = tk.Frame(bottomFrame, bg="red")
     
     firstName = user.split(" ")[0]
     lastName = user.split(" ")[1]
+    
+    firstNameField = tk.StringVar()
     
     try:
         connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
@@ -345,10 +349,15 @@ def userData(user):
         if connection:
             connection.close()
             
-    #firstNameLabel = tk.Label(rigthSubFrame, text=text.userManager.firstNameLabel)
+    firstNameLabel = tk.Label(rightSubFrame, text=text.userManager.firstNameLabel)
     
-    #firstNameLabel.grid(row=1, column=1)
-    rigthSubFrame.pack()
+    firstNameText = tk.Entry(rightSubFrame, textvariable=firstNameField, bg="white", width=30)
+    firstNameText.insert(0, userData[1])
+    
+    firstNameLabel.grid(row=1, column=1)
+    firstNameText.grid(row=1,column=2)
+    
+    rightSubFrame.pack(fill="both", pady=25)
         
         
     

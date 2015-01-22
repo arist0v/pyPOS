@@ -40,6 +40,6 @@ class userManagerScreen:
     
     def __init__(self):
         self.userListLabel= "Liste des utilisateurs"#label over the userlist
-        self.firstNameLabel= "Prenom"
+        self.firstNameLabel= "Prénom :"
         
 userManager = userManagerScreen()
