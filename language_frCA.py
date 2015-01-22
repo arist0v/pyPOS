@@ -9,6 +9,17 @@ include all text from the Program
 '''
 
 '''
+class for text in the licence windows
+'''
+
+class licenceScreen:
+    
+    def __init__(self):
+        self.title = "Licence GNU/GPL 3"
+        
+licence = licenceScreen()
+
+'''
 class for text in login screen
 '''
 class loginScreen:
@@ -22,6 +33,7 @@ class loginScreen:
         self.message = "Veuillez vous identifier"
         self.invalidUser = "Nom d'utilisateur inconnu"
         self.invalidPass = "Mot de passe invalide"
+        self.licence = "Ce logiciel est distribué sous licence GNU/GPL 3.0"
         
 login = loginScreen()#generate the login screen text Variable
 

@@ -109,6 +109,33 @@ def startProgram():
     window.after(500, loginScreen())
 
     window.mainloop()
+    
+'''
+function to show the licence in a popup
+'''
+def showLicence():
+    licence = tk.Toplevel(window)    
+    licence.title(text.licence.title)
+    
+    scroll = tk.Scrollbar(licence)
+    scroll.pack( side = "right", fill="y" )
+    
+    quitButton = tk.Button(licence, text="OK", command=lambda :licence.destroy())
+    
+    licenceText = tk.Text(licence, yscrollcommand=scroll.set, bg="white")
+    
+    licenceContent = open("LICENSE", "r")
+    
+    licenceText.insert("insert", licenceContent.read())
+    
+    licenceText.configure(state="disabled")
+    
+    scroll.configure(command = licenceText.yview)    
+    
+    licenceText.pack()
+    quitButton.pack()
+    
+    
 
 '''
 function to generate a login screen
@@ -141,16 +168,19 @@ def loginScreen():
     loginButton = tk.Button(mainFrame, text=text.login.login, command= lambda: auth())#create login button
     loginButton.bind('<Return>', lambda x: auth())#bind Return key when focus on username field
     quitButton = tk.Button(mainFrame, text=text.login.quit, command=window.quit)#create quit button
+    licenceLabel = tk.Label(mainFrame, text=text.login.licence)
+    licenceLabel.bind("<Button-1>",lambda x: showLicence())
     
     
-    messageLabel.pack()   
-    usernameLabel.pack()
-    usernameField.pack()
-    passwordLabel.pack()
-    passwordField.pack()
+    messageLabel.grid(row=1)   
+    usernameLabel.grid(row=2)
+    usernameField.grid(row=3)
+    passwordLabel.grid(row=4)
+    passwordField.grid(row=5)
     
-    loginButton.pack(side="left")
-    quitButton.pack(side="right")
+    loginButton.grid(sticky="w", row=6, pady=5)
+    quitButton.grid(sticky="e", row=6, pady=5)
+    licenceLabel.grid(row=7)
     mainFrame.pack(fill="both")
     mainFrame.place(relx=.42, rely=.40)
     
