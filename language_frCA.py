@@ -75,5 +75,12 @@ class changePasswordScreen:
         self.oldPass = "Mot de passe actuel :"
         self.newPass = "Mot de Passe :"
         self.confirmPass = "Confirmez le mot de passe :"
+        self.badOldPass = "Ancien mot de passe invalide"
+        self.badConfirm = "Les nouveaux mots de passe sont différent"
+        self.onlyLower = "Le mot de passe doit contenir au moins une(1) majuscule"
+        self.onlyUpper = "Le mot de passe doit contenir au moins une(1) minuscule"
+        self.noDigit = "Le mot de passe doit contenir au moins un(1) chiffre"
+        self.passShort = "Le mot de passe doit avoir au moins six(6) charactere"
+        self.errorTitle = "Erreur"
         
 changePassword = changePasswordScreen()

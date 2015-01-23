@@ -208,6 +208,7 @@ def auth():
         
         if (userCheck == None):
             tkm.showwarning("",text.login.invalidUser)#if no user found print warning
+            loginScreen()
             return
     
     except mdb.Error, e:
@@ -223,7 +224,8 @@ def auth():
         connectedUser.username = user#store username
         connectedUser.level = userCheck[1]#store admin level
         menuScreen()#show menu
-    
+    else:
+        loginScreen()
     
 
 '''
@@ -411,7 +413,7 @@ def userData(user):
     levelMenu["menu"].config(bg="white")
     levelMenu.configure(width=26, bg="white")
     
-    changePassButton = tk.Button(rightSubFrame, text=text.userManager.changePassButton, command= lambda: changeUserPass())
+    changePassButton = tk.Button(rightSubFrame, text=text.userManager.changePassButton, command= lambda: changeUserPass(userData[4]))
     changePassButton.config(state=state)
     saveButton = tk.Button(rightSubFrame, text=text.userManager.saveButton, command = lambda: saveUserData(firstNameField.get(), lastNameField.get(), emailField.get(), levelField.get(), userData[4]))
     saveButton.config(state=state)
@@ -479,17 +481,28 @@ def saveUserData(firstName, lastName, email, adminLevel, username):
 function to change the user password
 '''
    
-def changeUserPass():
+def changeUserPass(userName):
+    
+    global changePassScreen
     
     changePassScreen = tk.Toplevel(window)#create a popup window
     changePassScreen.title(text.changePassword.windowTitle)
+       
+    varOldPass = tk.StringVar()
+    varNewPass = tk.StringVar()
+    varConfirmPass = tk.StringVar()
     
     changePassLabel = tk.Label(changePassScreen, text=text.changePassword.instructionLabel, wraplength=300)#label containing instruction
     oldPassLabel = tk.Label(changePassScreen, text=text.changePassword.oldPass)#old pass label
+    newPassLabel = tk.Label(changePassScreen, text=text.changePassword.newPass)#new pass label
+    confirmPassLabel = tk.Label(changePassScreen, text=text.changePassword.confirmPass)#confirm password label
     
-    oldPassEntry = tk.Entry(changePassScreen, bg="white", width=30, show="*")
+    oldPassEntry = tk.Entry(changePassScreen, bg="white", width=20, show="*", textvariable=varOldPass)
+    oldPassEntry.focus()
+    newPassEntry = tk.Entry(changePassScreen, bg="white", width=20, show="*", textvariable=varNewPass)
+    confirmPassEntry = tk.Entry(changePassScreen, bg="white", width=20, show="*", textvariable=varConfirmPass)
     
-    changeButton = tk.Button(changePassScreen, text=text.changePassword.changeButton)
+    changeButton = tk.Button(changePassScreen, text=text.changePassword.changeButton, command=lambda: saveNewPass(userName, connectedUser.username, varOldPass.get(), varNewPass.get(), varConfirmPass.get()))
     cancelButton = tk.Button(changePassScreen, text=text.changePassword.cancelButton, command=lambda : changePassScreen.destroy())
     
     changePassLabel.grid(row=1, column=1, columnspan=2)
@@ -497,7 +510,134 @@ def changeUserPass():
     oldPassLabel.grid(row=2, column=1, pady=(20,0), padx=(5,0))
     oldPassEntry.grid(row=2, column=2, pady=(20,0), padx=5)
     
+    newPassLabel.grid(row=3, column=1, pady=(20,0), padx=(5,0))
+    newPassEntry.grid(row=3, column=2, pady=(20,0), padx=5)
+    
+    confirmPassLabel.grid(row=4, column=1, pady=(20,0), padx=(5,0))
+    confirmPassEntry.grid(row=4, column=2, pady=(20,0), padx=5)
+    
     changeButton.grid(row=5, column=1, pady=(20,0))
     cancelButton.grid(row=5, column=2, pady=(20,0))
     
+'''
+function to save the new password
+'''
+def saveNewPass(userName, connectedUser, oldPass, newPass, confirmPass):
     
+    warningMessage = ""
+    
+    userPass = encPassword(oldPass)
+    
+    #intialize password verification bool
+    passLower=0
+    passUpper=0
+    passDigit=0
+    passLen=0
+    goodConfirm=0
+    
+    try:
+        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute("""SELECT Password FROM Technicien WHERE Username =  '{0}'""".format(connectedUser))#request user information from database
+        
+        userCheck = cursor.fetchone()#
+           
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+            
+    if passCheck(userCheck[0], userPass):#if password is valid
+        oldPassGood = 1
+        
+        if (newPass == confirmPass):#if the new pass and confirmation are the same
+            goodConfirm = 1
+        
+            if passContainLower(newPass):#if password contain lower case
+                passLower= 1
+            else:
+                warningMessage = warningMessage + text.changePassword.onlyUpper + "\n"
+        
+            if passContainUpper(newPass):#if password contain upper case
+                passUpper= 1
+            else:
+                warningMessage = warningMessage + text.changePassword.onlyLower + "\n"
+        
+            if passContainDigit(newPass):#if password contain digit
+                passDigit = 1
+            else:
+                warningMessage = warningMessage + text.changePassword.noDigit + "\n"
+            
+            if (len(newPass) >=  6):  
+                passLen=1
+            else:
+                warningMessage = warningMessage + text.changePassword.passShort + "\n"
+        
+        else:
+            goodConfirm = 0
+            warningMessage = warningMessage + text.changePassword.badConfirm + "\n"
+        
+    else:
+        oldPassGood = 0 
+        
+    if oldPassGood and passLower and passUpper and passDigit and goodConfirm and passLen:
+        sql = """UPDATE Technicien SET Password = '{0}' WHERE Username = '{1}'""".format(encPassword(newPass), userName)#build sql request
+        
+        try:        
+            connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+            cursor= connection.cursor()
+        
+            cursor.execute(sql)#request to save user password
+            
+            connection.commit()#commit change
+           
+        except mdb.Error, e:
+            print "Error: {0} {1}".format(e.args[0], e.args[1])
+            sys.exit(1)
+            
+        finally:
+            if connection:
+                connection.close()
+        
+        changePassScreen.destroy()
+    else:
+        if oldPassGood:#if message is not from old password wrong
+            tkm.showwarning(text.changePassword.errorTitle, warningMessage)
+        changePassScreen.destroy()
+        
+'''
+function to look if password contain lowerCase
+'''
+def passContainLower(newPass):
+    for char in newPass:
+        if char.islower():
+            return 1
+    else:
+        return 0
+    
+'''
+function to look if password contain upperCase
+'''
+    
+def passContainUpper(newPass):
+    for char in newPass:
+        if char.isupper():
+            return 1
+    else:
+        return 0
+'''
+function to look if password contain digit
+'''
+def passContainDigit(newPass):
+    for char in newPass:
+        if char.isdigit():
+            return 1
+    else:
+        return 0
