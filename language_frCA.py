@@ -63,8 +63,19 @@ class userManagerScreen:
         self.saveButton = "Sauvegarder"
         self.savePopUp = "Changement Sauvegardé"
         self.addUserButton = "Ajouter un Utilisateur"
-        
+        self.deleteUserButton = "Supprimer"
+                
 userManager = userManagerScreen()
+
+class deleteUserScreen:
+    
+    def __init__(self):
+        self.windowTitle = "Supression"
+        self.deleteConfrim = "Voulez vous vraiment supprimer l'utilisateur : "
+        self.confirm = "Utilisateur "
+        self.confirm2 = " supprimé"
+        
+deleteUser = deleteUserScreen()
 
 class changePasswordScreen:
     
@@ -101,5 +112,12 @@ class newUserScreen:
         self.passwordLabel = "Mot de passe :"
         self.confirmPassLabel = "Confirmer le mot de passe :"
         self.usernameLabel = "Nom d'utilisateur :"
+        self.wrongConfirm = "Les mots de passe ne sont pas identiques"
+        self.errorTitle = "Erreur"
+        self.noFirstName = "Vous devez inscrire un prénom"
+        self.noLastName = "Vous devez inscrire un nom de famille"
+        self.noUsername = "Vous devez inscrire un nom d'utilisateur"
+        self.userAddedTitle = "Ajout d'utilisateur"
+        self.userAdded = "Utilisateur ajouté"
         
 newUser = newUserScreen()

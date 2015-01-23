@@ -9,6 +9,7 @@ DB configuration for the program
 from gtk._gtk import SIDE_LEFT
 from gtk._gtk import SIDE_RIGHT
 from Tkinter import OptionMenu
+from sqlite3.dbapi2 import sqlite_version_info
 Created on 2015-01-20
 
 @author: arist0v
@@ -78,6 +79,7 @@ function to encrypt password
 def encPassword(clearPass):
     
     staticSalt = "Raxacoricofallapatorius"
+    clearPass = clearPass.encode("utf-8")
     
     hash_object = hashlib.sha512(b'{0}'.format(staticSalt + clearPass))#hash psalt + password
     dynamicSaltBase = datetime.datetime.now().time()
@@ -284,8 +286,8 @@ def userManager():
     
     state="disabled"
     
-    if (connectedUser.level > 1):
-        state="normal"
+    if (connectedUser.level == 3):#if user is admin
+        state="normal"#he can add new user 
     
     try:
         bottomFrame.destroy()#try to destroy bottomFram if exist
@@ -360,7 +362,10 @@ fonction to print data of selected user
 '''
 def userData(user):
     
-    state="disabled"#defautl stat for edit user
+    state="disabled"#defautl state for edit user enabled on manager or itself
+    state2="disabled"#default state to edit user enablaed on adminstrator or itself
+    state3="disabled"#default state to edit user on adminstrator only
+    state4="disabled"#default state to allow delete user on administrato when not itself
       
     try:
         rightSubFrame.destroy()#try to destroy right frame if exist
@@ -377,7 +382,7 @@ def userData(user):
     lastNameField = tk.StringVar()
     emailField = tk.StringVar()
     levelField = tk.StringVar()
-    oldPassField = tk.StringVar()
+    #oldPassField = tk.StringVar()
     
     try:
         connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
@@ -398,8 +403,18 @@ def userData(user):
         if connection:
             connection.close()
             
-    if (connectedUser.level > 5 or connectedUser.username == userData[4]):#if user is admin or itself
+    if (connectedUser.level == 2 or connectedUser.username == userData[4]):#if user is manager or itself
         state="normal"
+    
+    if (connectedUser.level == 3 or connectedUser.username == userData[4]):#if user is admin or itself
+        state="normal"
+        state2="normal"
+        
+    if (connectedUser.level == 3):#if user is Administrator
+        state3="normal"
+        
+    if (connectedUser.level == 3 and not connectedUser.username == userData[4]):#if user is Administrator and is not itself for delete command
+        state4="normal"#enable delete button
             
     firstNameLabel = tk.Label(rightSubFrame, text=text.userManager.firstNameLabel)
     lastNameLabel = tk.Label(rightSubFrame, text=text.userManager.lastNameLabel)
@@ -408,34 +423,37 @@ def userData(user):
     
     firstNameText = tk.Entry(rightSubFrame, textvariable=firstNameField, bg="white", width=30)
     firstNameText.insert(0, userData[1])
-    firstNameText.configure(state=state)
+    firstNameText.configure(state=state2)
     
     lastNameText = tk.Entry(rightSubFrame, textvariable=lastNameField, bg="white", width=30)
     lastNameText.insert(0, userData[2])
-    lastNameText.configure(state=state)
+    lastNameText.configure(state=state2)
     
     emailText = tk.Entry(rightSubFrame, textvariable=emailField, bg="white", width=30)
     emailText.insert(0, userData[3])
-    emailText.configure(state=state)
+    emailText.configure(state=state2)
     
     levelMenu = tk.OptionMenu(rightSubFrame, levelField, text.userManager.levelUser, text.userManager.levelManager, text.userManager.levelAdmin)
     levelMenu["menu"].config(bg="white")
     levelMenu.configure(width=26, bg="white")
+    levelMenu.configure(state=state3)
     
     changePassButton = tk.Button(rightSubFrame, text=text.userManager.changePassButton, command= lambda: changeUserPass(userData[4]))
     changePassButton.config(state=state)
+    
+    deleteUserButton = tk.Button(rightSubFrame, text=text.userManager.deleteUserButton, command=lambda: deleteUser(userData[4], userData[1], userData[2]))
+    deleteUserButton.configure(state=state4)
+    
     saveButton = tk.Button(rightSubFrame, text=text.userManager.saveButton, command = lambda: saveUserData(firstNameField.get(), lastNameField.get(), emailField.get(), levelField.get(), userData[4]))
-    saveButton.config(state=state)
+    saveButton.config(state=state2)
             
     if (userData[6] == 2):
         levelField.set(text.userManager.levelManager)
     elif (userData[6] == 3):
         levelField.set(text.userManager.levelAdmin)
     else:
-        levelField.set(text.userManager.levelUser)
+        levelField.set(text.userManager.levelUser)      
         
-    levelMenu.configure(state=state)
-    
     firstNameLabel.grid(row=1, column=1)
     firstNameText.grid(row=1,column=2)
     
@@ -448,11 +466,44 @@ def userData(user):
     levelLabel.grid(row=2, column=3, pady=(20,0))
     levelMenu.grid(row=2, column=4, pady=(20,0))
     
-    changePassButton.grid(row=3, column=1, columnspan=2, sticky="w", pady=(20,0))
-    saveButton.grid(row=3, column=3, columnspan=2, sticky="e", pady=(20,0))
+    changePassButton.grid(row=3, column=1, columnspan=1, sticky="w", pady=(20,0))
+    deleteUserButton.grid(row=3, column=2, columnspan=2, pady=(20,0))
+    saveButton.grid(row=3, column=4, columnspan=1, sticky="e", pady=(20,0))
     
     rightSubFrame.pack(fill="both", pady=25)
     
+'''
+function to delete a user
+'''
+def deleteUser(username, firstName, LastName):
+    
+    confirm = tkm.askquestion(text.deleteUser.windowTitle, text.deleteUser.deleteConfrim + username)
+    if (confirm == 'yes'):
+        sql = """DELETE FROM Technicien WHERE Username = '{0}'""".format(username)
+
+        try:
+            connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+            cursor = connection.cursor()
+        
+            cursor.execute(sql)#send update to database
+        
+            connection.commit()
+
+        except mdb.Error, e:
+            print "Error: {0} {1}".format(e.args[0], e.args[1])
+            sys.exit(1)
+            
+        finally:
+            if connection:
+                connection.close()
+        
+        tkm.showinfo(text.deleteUser.windowTitle, text.deleteUser.confirm + username + text.deleteUser.confirm2)
+        userManager()
+        
+    else:
+        userData(firstName + " " + LastName)
+            
 '''
 function to change save to userData
 '''
@@ -681,7 +732,8 @@ def newUser():
     confirmPassLabel = tk.Label(rightSubFrame, text=text.newUser.confirmPassLabel)
     usernameLabel = tk.Label(rightSubFrame, text=text.newUser.usernameLabel)
     
-    firstNameText = tk.Entry(rightSubFrame, textvariable=firstNameField, bg="white", width=30)    
+    firstNameText = tk.Entry(rightSubFrame, textvariable=firstNameField, bg="white", width=30)
+    firstNameText.focus()    
     lastNameText = tk.Entry(rightSubFrame, textvariable=lastNameField, bg="white", width=30)    
     emailText = tk.Entry(rightSubFrame, textvariable=emailField, bg="white", width=30)
 
@@ -695,7 +747,7 @@ def newUser():
     
     usernameText = tk.Entry(rightSubFrame, textvariable=usernameField, bg="white", width=30)
     
-    saveButton = tk.Button(rightSubFrame, text=text.newUser.saveButton)
+    saveButton = tk.Button(rightSubFrame, text=text.newUser.saveButton, command=lambda: saveNewUser(firstNameField.get().encode("utf-8"), lastNameField.get().encode("utf-8"), emailField.get(), levelField.get(), usernameField.get().encode("utf-8"), passField.get(), confirmPassField.get()))
     
     firstNameLabel.grid(row=1, column=1)
     firstNameText.grid(row=1,column=2)
@@ -719,3 +771,98 @@ def newUser():
     saveButton.grid(row=4, column=3, columnspan=2, pady=(20,0))
     
     rightSubFrame.pack(fill="both", pady=25)
+    
+'''
+function to commit the new user
+'''
+def saveNewUser(firstName, lastName, email, adminLevel, username, password, confirmPassword):
+    
+    warningMessage = ""
+    
+    passLower=0
+    passUpper=0
+    passDigit=0
+    passLen=0
+    passConfirm=0
+    checkPassword=0
+    checkFirstName=0
+    checkLastName=0
+    checkUsername=0
+    
+    if (password == confirmPassword):
+        passConfirm=1
+        if passContainLower(password):#if password contain lower case
+            passLower= 1
+        else:
+            warningMessage = warningMessage + text.changePassword.onlyUpper + "\n"
+        
+        if passContainUpper(password):#if password contain upper case
+            passUpper= 1
+        else:
+            warningMessage = warningMessage + text.changePassword.onlyLower + "\n"
+        
+        if passContainDigit(password):#if password contain digit
+            passDigit = 1
+        else:
+            warningMessage = warningMessage + text.changePassword.noDigit + "\n"
+            
+        if (len(password) >=  6):  
+            passLen=1
+        else:
+            warningMessage = warningMessage + text.changePassword.passShort + "\n"
+        
+    else:
+        warningMessage = text.newUser.wrongConfirm
+    
+    if passConfirm and passLower and passUpper and passDigit and passLen:
+        checkPassword = 1
+        
+        if (firstName == ""):
+            warningMessage = warningMessage + text.newUser.noFirstName + "\n"
+        else:
+            checkFirstName = 1
+        if (lastName == ""):
+            warningMessage = warningMessage + text.newUser.noLastName + "\n"
+        else:
+            checkLastName = 1
+        if (username == ""):
+            warningMessage = warningMessage + text.newUser.noUsername + "\n"
+        else:
+            checkUsername = 1
+        if checkFirstName and checkLastName and checkUsername:
+            
+            if (adminLevel == text.userManager.levelAdmin):#convert adminLevel to equivalent ID
+                adminLevel = 3
+            elif (adminLevel.encode("utf-8") == text.userManager.levelManager):
+                adminLevel = 2
+            else:
+                adminLevel = 1
+            
+            sql = """INSERT INTO Technicien(Prenom, Nom, Email, Username, Password, levelID) VALUES('{0}', '{1}', '{2}', '{3}', '{4}', '{5}')""".format(firstName, lastName, email, username, encPassword(password), adminLevel)
+            
+            try:        
+                connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+                cursor= connection.cursor()
+        
+                cursor.execute(sql)#request to save user password
+            
+                connection.commit()#commit new user
+           
+            except mdb.Error, e:
+                print "Error: {0} {1}".format(e.args[0], e.args[1])
+                sys.exit(1)
+            
+            finally:
+                if connection:
+                    connection.close()
+                tkm.showinfo(text.newUser.userAddedTitle, text.newUser.userAdded)
+                userManager()                        
+        else:
+            tkm.showerror(text.newUser.errorTitle, warningMessage)
+    else:                
+        tkm.showerror(text.newUser.errorTitle, warningMessage)
+    
+        
+     
+    
