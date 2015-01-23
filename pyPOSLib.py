@@ -2,16 +2,7 @@
 #!/usr/bin/python
 '''
 Created on 2015-01-20
-
-@author: arist0v
-DB configuration for the program
-''''''
-from gtk._gtk import SIDE_LEFT
-from gtk._gtk import SIDE_RIGHT
-from Tkinter import OptionMenu
-from sqlite3.dbapi2 import sqlite_version_info
-Created on 2015-01-20
-
+main library for the program
 @author: arist0v
 '''
 
@@ -99,7 +90,7 @@ function to start the program
 def startProgram():
     global window
     window = tk.Tk()#create main windows
-    window.wm_title("pyPOS")#Title of windows
+    window.wm_title(text.mainText.mainWindowTitle + " " + text.mainText.version)#Title of windows
     #global h#global height
     #global w#blobal width
     h = window.winfo_screenheight()
