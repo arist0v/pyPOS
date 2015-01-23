@@ -58,8 +58,13 @@ class menuScreen:
     def __init__(self):
         self.logout = "Déconnexion"#Logout Button
         self.user = "Utilisateur"#User menu button
+        self.config = "Configuration"# configuration menu button
         
 menu = menuScreen()
+
+'''
+text for the user manager screen
+'''
 
 class userManagerScreen:
     
@@ -80,6 +85,10 @@ class userManagerScreen:
                 
 userManager = userManagerScreen()
 
+'''
+text for the delete user popup
+'''
+
 class deleteUserScreen:
     
     def __init__(self):
@@ -89,6 +98,10 @@ class deleteUserScreen:
         self.confirm2 = " supprimé"
         
 deleteUser = deleteUserScreen()
+
+'''
+text for the change password screen
+'''
 
 class changePasswordScreen:
     
@@ -109,6 +122,10 @@ class changePasswordScreen:
         self.errorTitle = "Erreur"
         
 changePassword = changePasswordScreen()
+
+'''
+text fort the new user screen
+'''
 
 class newUserScreen:
     
@@ -134,3 +151,14 @@ class newUserScreen:
         self.userAdded = "Utilisateur ajouté"
         
 newUser = newUserScreen()
+
+'''
+text for the systeme configuration screen
+'''
+
+class sysConfigScreen:
+    
+    def __init__(self):
+        self.titleLabel = "Configuration du système"
+        
+sysConfig = sysConfigScreen()
