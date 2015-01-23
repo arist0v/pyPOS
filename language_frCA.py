@@ -62,6 +62,7 @@ class userManagerScreen:
         self.changePassButton = "Modifiez le mot de passe"
         self.saveButton = "Sauvegarder"
         self.savePopUp = "Changement Sauvegardé"
+        self.addUserButton = "Ajouter un Utilisateur"
         
 userManager = userManagerScreen()
 
@@ -84,3 +85,21 @@ class changePasswordScreen:
         self.errorTitle = "Erreur"
         
 changePassword = changePasswordScreen()
+
+class newUserScreen:
+    
+    def __init__(self):
+        self.firstNameLabel = "Prénom :"
+        self.lastNameLabel = "Nom :"
+        self.emailLabel = "Courriel :"
+        self.levelLabel = "Type :"
+        self.levelUser = "Utilisateur"
+        self.levelManager = "Gérant"
+        self.levelAdmin = "Administrateur"
+        self.saveButton = "Sauvegarder"
+        self.addedPopup = "Changement Sauvegardé"
+        self.passwordLabel = "Mot de passe :"
+        self.confirmPassLabel = "Confirmer le mot de passe :"
+        self.usernameLabel = "Nom d'utilisateur :"
+        
+newUser = newUserScreen()

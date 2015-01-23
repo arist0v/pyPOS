@@ -107,7 +107,7 @@ def startProgram():
     window.resizable(0, 0)
 
 
-    window.after(500, loginScreen())
+    window.after(1, loginScreen())
 
     window.mainloop()
     
@@ -207,7 +207,7 @@ def auth():
         userCheck = cursor.fetchone()#
         
         if (userCheck == None):
-            tkm.showwarning("",text.login.invalidUser)#if no user found print warning
+            tkm.showerror("",text.login.invalidUser)#if no user found print warning
             loginScreen()
             return
     
@@ -237,7 +237,7 @@ def passCheck(dbPass, userPass):
     if (userPass[:-42] == dbPass[:-42]):#if password minus dynamic salt is identic
         return 1#return true
     else:
-        tkm.showwarning("", text.login.invalidPass)#else show warning invalid password
+        tkm.showerror("", text.login.invalidPass)#else show warning invalid password
 
 def menuScreen():
     
@@ -282,6 +282,11 @@ function to access the user management menu
 '''
 def userManager():
     
+    state="disabled"
+    
+    if (connectedUser.level > 1):
+        state="normal"
+    
     try:
         bottomFrame.destroy()#try to destroy bottomFram if exist
     except:
@@ -308,6 +313,9 @@ def userManager():
     
     userList = tk.Listbox(leftSubFrame, bg="white")
     userListLabel = tk.Label(leftSubFrame, text=text.userManager.userListLabel)
+    
+    addUserButton = tk.Button(leftSubFrame, text=text.userManager.addUserButton, command=lambda: newUser())
+    addUserButton.configure(state=state)
       
     users = getUserList()
     for user in users:#add each table to list
@@ -316,7 +324,8 @@ def userManager():
     userList.bind('<<ListboxSelect>>', lambda x: userData(userList.get(userList.curselection())))
     
     userListLabel.grid(row=1, column=1)
-    userList.grid(row=2, column=1, columnspan=10)
+    userList.grid(row=2, column=1, columnspan=1)
+    addUserButton.grid(row=3, column=1, columnspan=1, pady=(5,0))
     rightSubFrame.pack(fill="both", pady=25, side="right")
     leftSubFrame.pack(side="left", anchor="w", fill="y")   
     bottomFrame.pack(side="bottom", fill="x")
@@ -609,7 +618,7 @@ def saveNewPass(userName, connectedUser, oldPass, newPass, confirmPass):
         changePassScreen.destroy()
     else:
         if oldPassGood:#if message is not from old password wrong
-            tkm.showwarning(text.changePassword.errorTitle, warningMessage)
+            tkm.showerror(text.changePassword.errorTitle, warningMessage)
         changePassScreen.destroy()
         
 '''
@@ -641,3 +650,72 @@ def passContainDigit(newPass):
             return 1
     else:
         return 0
+    
+'''
+function to add a new user
+'''
+
+def newUser():
+    
+    try:
+        rightSubFrame.destroy()#try to destroy right frame if exist
+    except:
+        pass
+    
+    global rightSubFrame
+    rightSubFrame = tk.Frame(bottomFrame)
+    
+    firstNameField = tk.StringVar()
+    lastNameField = tk.StringVar()
+    emailField = tk.StringVar()
+    levelField = tk.StringVar()
+    passField = tk.StringVar()
+    confirmPassField = tk.StringVar()
+    usernameField = tk.StringVar()
+    
+    firstNameLabel = tk.Label(rightSubFrame, text=text.newUser.firstNameLabel)
+    lastNameLabel = tk.Label(rightSubFrame, text=text.newUser.lastNameLabel)
+    emailLabel = tk.Label(rightSubFrame, text=text.newUser.emailLabel)
+    levelLabel = tk.Label(rightSubFrame, text=text.newUser.levelLabel)
+    passwordLabel = tk.Label(rightSubFrame, text=text.newUser.passwordLabel)
+    confirmPassLabel = tk.Label(rightSubFrame, text=text.newUser.confirmPassLabel)
+    usernameLabel = tk.Label(rightSubFrame, text=text.newUser.usernameLabel)
+    
+    firstNameText = tk.Entry(rightSubFrame, textvariable=firstNameField, bg="white", width=30)    
+    lastNameText = tk.Entry(rightSubFrame, textvariable=lastNameField, bg="white", width=30)    
+    emailText = tk.Entry(rightSubFrame, textvariable=emailField, bg="white", width=30)
+
+    levelMenu = tk.OptionMenu(rightSubFrame, levelField, text.newUser.levelUser, text.newUser.levelManager, text.newUser.levelAdmin)
+    levelMenu["menu"].config(bg="white")
+    levelMenu.configure(width=26, bg="white")
+    levelField.set(text.newUser.levelUser)
+    
+    passwordText = tk.Entry(rightSubFrame, textvariable=passField, bg="white", width=30, show="*")
+    confPassText = tk.Entry(rightSubFrame, textvariable=confirmPassField, bg="white", width=30, show="*")    
+    
+    usernameText = tk.Entry(rightSubFrame, textvariable=usernameField, bg="white", width=30)
+    
+    saveButton = tk.Button(rightSubFrame, text=text.newUser.saveButton)
+    
+    firstNameLabel.grid(row=1, column=1)
+    firstNameText.grid(row=1,column=2)
+    
+    lastNameLabel.grid(row=1, column=3, padx=10)
+    lastNameText.grid(row=1, column=4)
+    
+    emailLabel.grid(row=2, column=1, pady=(20,0))
+    emailText.grid(row=2, column=2, pady=(20,0))
+    
+    levelLabel.grid(row=2, column=3, pady=(20,0))
+    levelMenu.grid(row=2, column=4, pady=(20,0))
+    
+    passwordLabel.grid(row=3, column=1, pady=(20,0))
+    passwordText.grid(row=3, column=2, pady=(20,0))
+    confirmPassLabel.grid(row=3, column=3, pady=(20,0))
+    confPassText.grid(row=3, column=4, pady=(20,0))    
+
+    usernameLabel.grid(row=4, column=1, pady=(20,0))
+    usernameText.grid(row=4, column=2, pady=(20,0))
+    saveButton.grid(row=4, column=3, columnspan=2, pady=(20,0))
+    
+    rightSubFrame.pack(fill="both", pady=25)
