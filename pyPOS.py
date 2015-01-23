@@ -872,6 +872,26 @@ function to show the systeme configuration
 '''        
 def sysConfig():
     
+    availableLanguages = getLanguages()#get table of all available language pack in folder
+    languageField = tk.StringVar()
+    
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute("""SELECT language FROM sysConfig""")#request to save user password
+            
+        defaultLanguage = cursor.fetchone()[0]
+           
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()  
+    
     try:
         bottomFrame.destroy()#try to destroy bottomFram if exist
     except:
@@ -881,10 +901,16 @@ def sysConfig():
     bottomFrame = tk.Frame(mainFrame)#recreate a new bottom frame
     
     titleLabel = tk.Label(bottomFrame, text=text.sysConfig.titleLabel, font=(16))
+    languageLabel = tk.Label(bottomFrame, text=text.sysConfig.languageLabel)  
     
-    titleLabel.pack(side="top")#grid(row=1,column=1)
+    languageMenu = tk.OptionMenu(bottomFrame, languageField, *availableLanguages)
+    languageMenu["menu"].config(bg="white")
+    languageMenu.configure(width=26, bg="white")
+    languageField.set(defaultLanguage)
     
-    availableLanguages = getLanguages()#get table of all available language
+    titleLabel.grid(row=1, column=1, columnspan=2)
+    languageLabel.grid(row=2, column=1, pady=(5,0))
+    languageMenu.grid(row=2, column=2, pady=(5,0))    
     
     bottomFrame.pack(side="bottom", fill="x", pady=(5,0))
     

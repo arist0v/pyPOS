@@ -160,5 +160,6 @@ class sysConfigScreen:
     
     def __init__(self):
         self.titleLabel = "Configuration du système"
+        self.languageLabel = "Langue :"
         
 sysConfig = sysConfigScreen()
