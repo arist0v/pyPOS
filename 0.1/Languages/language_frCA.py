@@ -14,7 +14,6 @@ class for text on the main text, program name, version, author etc...
 class mainSoftwareText:
     
     def __init__(self):
-        self.version = "0.1"
         self.program = "pyPOS"
         self.mainWindowTitle = "pyPOS - Point de vente, Système de facturation en Python"
         self.author = "Martin Verret"

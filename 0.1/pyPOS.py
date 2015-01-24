@@ -19,6 +19,8 @@ import Tkinter as tk#import tkinter Library
 import tkMessageBox as tkm#import tk message box
 import os#import the OS function
 
+global version#create global var for version number
+version = "0.1"#current version
 
 '''
 importing the sys default language
@@ -95,7 +97,7 @@ function to start the program
 def startProgram():
     global window
     window = tk.Tk()#create main windows
-    window.wm_title(text.mainText.mainWindowTitle + " " + text.mainText.version)#Title of windows
+    window.wm_title(text.mainText.mainWindowTitle + " - " + version)#Title of windows
     #global h#global height
     #global w#blobal width
     h = window.winfo_screenheight()
