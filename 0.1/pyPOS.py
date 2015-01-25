@@ -12,18 +12,20 @@ Main file of the system
 
 '''
 ##################TODO LIST##################
+item with * for version 0.2 : having a base program working asap
 currently working on config page:
 
 -sales section
 -client section:
     -client information
     -find old invoice
-    -print contract(i.e: pentest agrement)
+    -print contract(i.e: pentest agrement)*
 -inventory section:
-    -item
-    -category
+    -item*
+    -groups(ie:a computer is made of multiple item)
+    -category*
     -services
--report section
+-report section*
     -day sale
     -year sale
     -month sale
