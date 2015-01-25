@@ -13,6 +13,28 @@ Main file of the system
 '''
 ##################TODO LIST##################
 currently working on config page:
+
+-sales section
+-client section:
+    -client information
+    -find old invoice
+    -print contract(i.e: pentest agrement)
+-inventory section:
+    -item
+    -category
+    -services
+-report section
+    -day sale
+    -year sale
+    -month sale
+    -day profit
+    -month profit
+    -year profit
+    -taxes report
+    -inventory report
+    -bank section
+    -hours bank
+    -cash bank
 -database backup/restore from .sql file
 -taxes add/delete
 -taxes groupe add/delete groupe
@@ -24,6 +46,7 @@ currently working on config page:
     -taxe group
     -backup
     -language
+    -paiement
     
 LATER:
 create a setup.py for installation
