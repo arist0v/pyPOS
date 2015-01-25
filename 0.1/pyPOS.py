@@ -37,12 +37,14 @@ currently working on config page:
     -bank section
     -hours bank
     -cash bank
--database backup/restore from .sql file
--taxes add/delete
--taxes groupe add/delete groupe
--taxes groupe add/delete taxes from group
--taxes groupe cascade taxe + order to apply it
--finish language settings
+-configuration section:
+    -database backup/restore from .sql file
+    -taxes add/delete
+    -taxes groupe add/delete groupe
+    -taxes groupe add/delete taxes from group
+    -taxes groupe cascade taxe + order to apply it
+    -finish language settings
+    -Buisness information(name adresse etc...)
 -section that should be save independently:
     -taxe
     -taxe group
