@@ -38,6 +38,8 @@ currently working on config page:
     -hours bank
     -cash bank
 -configuration section:
+    -move current work into a menu section
+    -Menu of the section
     -database backup/restore from .sql file
     -taxes add/delete
     -taxes groupe add/delete groupe
@@ -45,12 +47,7 @@ currently working on config page:
     -taxes groupe cascade taxe + order to apply it
     -finish language settings
     -Buisness information(name adresse etc...)
--section that should be save independently:
-    -taxe
-    -taxe group
-    -backup
-    -language
-    -paiement
+
     
 LATER:
 create a setup.py for installation
