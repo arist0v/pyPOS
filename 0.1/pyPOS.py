@@ -10,6 +10,27 @@ Main file of the system
 #test passowrd: Tomate42
 '''
 
+'''
+##################TODO LIST##################
+currently working on config page:
+-database backup/restore from .sql file
+-taxes add/delete
+-taxes groupe add/delete groupe
+-taxes groupe add/delete taxes from group
+-taxes groupe cascade taxe + order to apply it
+-finish language settings
+-section that should be save independently:
+    -taxe
+    -taxe group
+    -backup
+    -language
+    
+LATER:
+create a setup.py for installation
+create englishUS language pack
+create help button on different page
+'''
+
 import MySQLdb as mdb#import mysqldb library
 import sys#import system database
 import dbConfig#import personnal lib dbconfig
