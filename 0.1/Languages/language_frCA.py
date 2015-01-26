@@ -162,10 +162,20 @@ class sysConfigScreen:
         self.menuDatabase = "Base de données"#database configuration menu buttun
         self.menuTaxe = "Taxe"#tax configuration menu button
         self.menuTaxeGroup = "Groupe de taxes"#taxes group configuration menu button
-        self.menuShopInfo = "Info Boutique"#shop info configurations
+        self.menuStoreInfo = "Info Boutique"#shop info configurations
         self.languageTitleLabel = "Configuration de la langue"#title of language config
         self.languageLabel = "Langue :"
         self.languageSaveButton = "Sauvegarder"
         self.nextRebootText = "Les modifications seront apportées au prochain démarrage de l'application."
+        self.storeInfoTitleLabel = "Information sur la boutique"
+        self.storeNameLabel = "Nom de la boutique :"#store name
+        self.storeEmailLabel = "Courriel :"#email adresse of the store
+        self.storeAddressLabel = "Adresse :"
+        self.storePhoneLabel = "Téléphone :"
+        self.storeCityLabel = "Ville :"
+        self.storeProvinceLabel = "Province :"
+        self.storePostalCodeLabel = "Code Postal :"
+        self.storeSaveButton = "Sauvegarder"
+        self.storeDataSaved = "Information sauvegardé"
         
 sysConfig = sysConfigScreen()

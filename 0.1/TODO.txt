@@ -36,17 +36,8 @@ currently working on config page:
     -taxes group add/delete groupe
     -taxes group add/delete taxes from group
     -taxes group cascade taxe + order to apply it
-    -Buisness information(name address etc...):
-    	-Shop name
-    	-address
-    	-phone
-    	-postal code
-    	-City
-    	-Province/state(definend by language)
-    	-email
-
-    
+        
 LATER:
-create a setup.py for installation
+create a setup.py for installation -Gui
 create englishUS language pack
 create help button on different pag

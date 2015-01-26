@@ -863,7 +863,7 @@ def saveNewUser(firstName, lastName, email, adminLevel, username, password, conf
         else:
             tkm.showerror(text.newUser.errorTitle, warningMessage)
     else:                
-        tkm.showerror(text.newUser.errorTitle, warningMessage)
+        tkm.showerror(text.newUser.errorTitle, warningMessage)  
         
 '''
 function to open the system configuration
@@ -905,8 +905,8 @@ def sysConfig():
     
     languageButton = tk.Button(leftSubFrame, text=text.sysConfig.menuLanguage, width=15, command= lambda: langConfig())
     languageButton.config(state=state2)
-    shopInfoButton = tk.Button(leftSubFrame, text=text.sysConfig.menuShopInfo, width=15)
-    shopInfoButton.config(state=state)
+    storeInfoButton = tk.Button(leftSubFrame, text=text.sysConfig.menuStoreInfo, width=15, command= lambda: storeInfo())
+    storeInfoButton.config(state=state)
     databaseButton = tk.Button(leftSubFrame, text=text.sysConfig.menuDatabase, width=15)
     databaseButton.config(state=state)
     taxeButton = tk.Button(leftSubFrame, text=text.sysConfig.menuTaxe, width=15)
@@ -914,16 +914,134 @@ def sysConfig():
     taxeGroupButton = tk.Button(leftSubFrame, text=text.sysConfig.menuTaxeGroup, width=15)
     taxeGroupButton.config(state=state2)
     
-    shopInfoButton.grid(row=1, column=1)
-    taxeButton.grid(row=2,column=1)
-    taxeGroupButton.grid(row=3, column=1)
-    languageButton.grid(row=4,column=1)    
-    databaseButton.grid(row=5, column=1)    
+    storeInfoButton.grid(row=1, column=1, pady=(5,0))
+    taxeButton.grid(row=2,column=1, pady=(5,0))
+    taxeGroupButton.grid(row=3, column=1, pady=(5,0))
+    languageButton.grid(row=4,column=1, pady=(5,0))    
+    databaseButton.grid(row=5, column=1, pady=(5,0))    
     
     rightSubFrame.pack(fill="both")
     leftSubFrame.pack(side="left", anchor="w", fill="y")   
     bottomFrame.pack(side="bottom", fill="x")
     
+'''
+function to open the buisness information configuration
+'''
+def storeInfo():
+    state = "disabled"
+    
+    storeNameData = tk.StringVar()
+    storeEmailData= tk.StringVar()
+    storeAddressData = tk.StringVar()
+    storePhoneData = tk.StringVar()
+    storeCityData = tk.StringVar()
+    storeProvinceData = tk.StringVar()
+    storePostalCodeData = tk.StringVar()
+    
+    if (connectedUser.level == 3):
+        state = "normal"
+    
+    try:
+        rightSubFrame.destroy()#try to destroy bottomFram if exist
+    except:
+        pass
+    
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute("""SELECT * FROM storeData""")#request to save user password
+        
+        storeData = cursor.fetchone()
+                       
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+            
+    global rightSubFrame  
+    rightSubFrame = tk.Frame(bottomFrame)#recreate a new bottom frame
+    
+    storeInfoLabel = tk.Label(rightSubFrame, text=text.sysConfig.storeInfoTitleLabel, font=(16))
+    
+    storeNameLabel = tk.Label(rightSubFrame, text=text.sysConfig.storeNameLabel)
+    storeNameField = tk.Entry(rightSubFrame, textvariable=storeNameData, bg="white", width=30)
+    storeNameField.insert(0, storeData[1])
+    
+    storeEmailLabel = tk.Label(rightSubFrame, text=text.sysConfig.storeEmailLabel)
+    storeEmailField = tk.Entry(rightSubFrame, textvariable=storeEmailData, bg="white", width=30)
+    storeEmailField.insert(0, storeData[7])
+    
+    storeAddressLabel = tk.Label(rightSubFrame, text=text.sysConfig.storeAddressLabel)
+    storeAddressField = tk.Entry(rightSubFrame, textvariable=storeAddressData, bg="white", width=30)
+    storeAddressField.insert(0, storeData[2])
+    
+    storePhoneLabel = tk.Label(rightSubFrame, text=text.sysConfig.storePhoneLabel)
+    storePhoneField = tk.Entry(rightSubFrame, textvariable=storePhoneData, bg="white", width=10)
+    storePhoneField.insert(0, storeData[6])
+    
+    storeCityLabel = tk.Label(rightSubFrame, text=text.sysConfig.storeCityLabel)
+    storeCityField = tk.Entry(rightSubFrame, textvariable=storeCityData, bg="white", width=20)
+    storeCityField.insert(0, storeData[4])
+    storeProvinceLabel = tk.Label(rightSubFrame, text=text.sysConfig.storeProvinceLabel)
+    storeProvinceField = tk.Entry(rightSubFrame, textvariable=storeProvinceData, bg="white", width=20)
+    storeProvinceField.insert(0, storeData[5])
+    storePostalCodeLabel = tk.Label(rightSubFrame, text=text.sysConfig.storePostalCodeLabel)
+    storePostalCodeField = tk.Entry(rightSubFrame, textvariable=storePostalCodeData, bg="white", width=10)
+    storePostalCodeField.insert(0, storeData[3])
+    
+    storeSaveButton = tk.Button(rightSubFrame, text=text.sysConfig.storeSaveButton, command= lambda: saveStoreInfo(storeNameData.get().encode("utf-8"), storeAddressData.get().encode("utf-8"), storePostalCodeData.get().encode("utf-8"), storeCityData.get().encode("utf-8"), storeProvinceData.get().encode("utf-8"), storePhoneData.get().encode("utf-8"), storeEmailData.get().encode("utf-8")))
+    
+    storeInfoLabel.grid(row=1, column=1, columnspan=6, pady=(5,0))
+    storeNameLabel.grid(row=2, column=1, pady=(5,0), columnspan=1)
+    storeNameField.grid(row=2,column=2, pady=(5,0), columnspan=2)
+    storeEmailLabel.grid(row=2, column=4, pady=(5,0), padx=(10,0), columnspan=1)
+    storeEmailField.grid(row=2, column=5, pady=(5,0), columnspan=2)
+    storeAddressLabel.grid(row=3, column=1, pady=(5,0), columnspan=1)
+    storeAddressField.grid(row=3, column=2, pady=(5,0), columnspan=2)
+    storePhoneLabel.grid(row=3, column=4, pady=(5,0), padx=(10,0), columnspan=1)
+    storePhoneField.grid(row=3, column=5, pady=(5,0), columnspan=2)
+    storeCityLabel.grid(row=4, column=1, pady=(5,0))
+    storeCityField.grid(row=4, column=2, pady=(5,0))
+    storeProvinceLabel.grid(row=4, column=3, pady=(5,0), padx=(10,0))
+    storeProvinceField.grid(row=4, column=4, pady=(5,0))
+    storePostalCodeLabel.grid(row=4, column=5, pady=(5,0), padx=(10,0))
+    storePostalCodeField.grid(row=4, column=6, pady=(5,0))
+    storeSaveButton.grid(row=5, column=1, columnspan=6, pady=(5,0))
+    
+    rightSubFrame.pack(fill="x", pady=(5,0))
+    
+'''
+function to save storeInfo
+'''
+def saveStoreInfo(storeName, storeAddress, storePostalCode, storeCity, storeProvince, storePhone, storeEmail):
+    
+    sql = """UPDATE storeData SET storeName = '{0}', storeAddress = '{1}', storePostalCode = '{2}', storeCity = '{3}', storeProvince = '{4}', storePhone = '{5}', storeEmail = '{6}' WHERE ID = 1""".format(storeName, storeAddress, storePostalCode, storeCity, storeProvince, storePhone, storeEmail)
+    
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute(sql)#request to save shop info
+            
+        connection.commit()#commit shop Info
+          
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+    
+    tkm.showinfo("", text.sysConfig.storeDataSaved)
+    sysConfig()
+
 '''
 function to show the language configuration
 '''        
@@ -943,8 +1061,7 @@ def langConfig():
            
     except mdb.Error, e:
         print "Error: {0} {1}".format(e.args[0], e.args[1])
-        sys.exit(1)
-            
+                    
     finally:
         if connection:
             connection.close()  
