@@ -909,7 +909,7 @@ def sysConfig():
     storeInfoButton.config(state=state)
     databaseButton = tk.Button(leftSubFrame, text=text.sysConfig.menuDatabase, width=15)
     databaseButton.config(state=state)
-    taxeButton = tk.Button(leftSubFrame, text=text.sysConfig.menuTaxe, width=15)
+    taxeButton = tk.Button(leftSubFrame, text=text.sysConfig.menuTaxe, width=15, command= lambda: taxeInfo())
     taxeButton.config(state=state2)
     taxeGroupButton = tk.Button(leftSubFrame, text=text.sysConfig.menuTaxeGroup, width=15)
     taxeGroupButton.config(state=state2)
@@ -923,6 +923,157 @@ def sysConfig():
     rightSubFrame.pack(fill="both")
     leftSubFrame.pack(side="left", anchor="w", fill="y")   
     bottomFrame.pack(side="bottom", fill="x")
+    
+'''
+function to open taxe information
+'''
+def taxeInfo():
+    
+    global taxeNameData
+    global taxeDescriptionData
+    global taxeRateData
+    
+    taxeNameData = tk.StringVar()
+    taxeDescriptionData = tk.StringVar()
+    taxeRateData= tk.StringVar()
+    
+    state = "disabled"
+    
+    taxeField= tk.StringVar()
+    
+    if (connectedUser.level == 3):
+        state = "normal"
+    
+    try:
+        rightSubFrame.destroy()#try to destroy bottomFram if exist
+    except:
+        pass
+    
+    global rightSubFrame  
+    rightSubFrame = tk.Frame(bottomFrame)#recreate a new bottom frame
+    
+    sql = """SELECT * FROM Taxes"""
+    
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute(sql)#request to save user password
+        
+        taxeData = cursor.fetchall()
+                               
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+    
+    taxeTable = []
+    
+    i = 0
+    
+    for taxe in taxeData:
+        taxeTable.append(taxeData[i][1])
+        i = i + 1
+            
+    taxeMenu = tk.OptionMenu(rightSubFrame, taxeField, *taxeTable)
+    taxeMenu["menu"].config(bg="white")
+    taxeMenu.configure(width=26, bg="white")
+    
+    taxeChoseButton = tk.Button(rightSubFrame, text=text.sysConfig.taxeChoseButton, command= lambda: taxeDetails(taxeField.get()))
+    
+    taxeChoseButton.grid(row=1, column=2, pady=(5,0), padx=(100,90))
+    taxeMenu.grid(row=1, column=1, pady=(5,0))
+    rightSubFrame.pack(fill="x", pady=(5,0))
+    
+'''
+function to show taxe details
+'''
+
+def taxeDetails(taxe):
+    
+    #taxeNameData = tk.StringVar()
+    #taxeDescriptionData = tk.StringVar()
+    #taxeRateData= tk.StringVar()
+        
+    if taxe == "":
+        tkm.showerror("", text.sysConfig.errorNoTaxe)
+        return
+    
+    sql = """SELECT * FROM Taxes WHERE Taxe = '{0}'""".format(taxe)
+    
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute(sql)#request to get taxe information
+        
+        taxeData = cursor.fetchone()
+                               
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+           
+    taxeNameLabel = tk.Label(rightSubFrame, text=text.sysConfig.taxeNameLabel)
+    taxeNameField = tk.Entry(rightSubFrame, textvariable=taxeNameData, bg="white", width=30)
+    taxeNameField.delete(0, "end")
+    taxeNameField.insert(0, taxeData[1])
+    
+    taxeDescriptionLabel = tk.Label(rightSubFrame, text=text.sysConfig.taxeDescription)
+    taxeDescriptionField = tk.Entry(rightSubFrame, textvariable=taxeDescriptionData, bg="white", width=30)
+    taxeDescriptionField.delete(0, "end")
+    taxeDescriptionField.insert(0, taxeData[2])
+    
+    taxeRateLabel = tk.Label(rightSubFrame, text=text.sysConfig.taxeRates)
+    taxeRateField = tk.Entry(rightSubFrame, textvariable = taxeRateData, bg="white", width=30)
+    taxeRateField.delete(0, "end")
+    taxeRateField.insert(0, taxeData[3])
+    
+    taxeEditButton = tk.Button(rightSubFrame, text=text.sysConfig.taxeEditButton, command= lambda: saveTaxeChange(taxeData[0], taxeNameData.get(), taxeDescriptionData.get(), taxeRateData.get()))
+    
+    taxeNameLabel.grid(row=2, column=1, pady=(5,0))
+    taxeNameField.grid(row=2, column=2, pady=(5,0))
+    
+    taxeDescriptionLabel.grid(row=3, column=1, pady=(5,0))
+    taxeDescriptionField.grid(row=3, column=2, pady=(5,0))
+    
+    taxeRateLabel.grid(row=4, column=1, pady=(5,0))
+    taxeRateField.grid(row=4, column=2, pady=(5,0))
+    
+    taxeEditButton.grid(row=5, column=1, pady=(5,0), columnspan=2)
+    
+'''
+function to save the modification made on taxe
+'''
+def saveTaxeChange(ID, taxe, taxeDescription, taxeRate):
+    sql = "UPDATE Taxes SET Taxe = '{0}', Description = '{1}', Rate = '{2}' WHERE ID = {3}".format(taxe, taxeDescription, taxeRate, ID)
+    
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute(sql)#request to save taxe info
+            
+        connection.commit()#commit change
+          
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+            
+    tkm.showinfo("", text.sysConfig.taxeChanged)
     
 '''
 function to open the buisness information configuration
@@ -995,6 +1146,7 @@ def storeInfo():
     storePostalCodeField.insert(0, storeData[3])
     
     storeSaveButton = tk.Button(rightSubFrame, text=text.sysConfig.storeSaveButton, command= lambda: saveStoreInfo(storeNameData.get().encode("utf-8"), storeAddressData.get().encode("utf-8"), storePostalCodeData.get().encode("utf-8"), storeCityData.get().encode("utf-8"), storeProvinceData.get().encode("utf-8"), storePhoneData.get().encode("utf-8"), storeEmailData.get().encode("utf-8")))
+    storeSaveButton.config(state=state)
     
     storeInfoLabel.grid(row=1, column=1, columnspan=6, pady=(5,0))
     storeNameLabel.grid(row=2, column=1, pady=(5,0), columnspan=1)

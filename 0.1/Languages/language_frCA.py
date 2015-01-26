@@ -177,5 +177,12 @@ class sysConfigScreen:
         self.storePostalCodeLabel = "Code Postal :"
         self.storeSaveButton = "Sauvegarder"
         self.storeDataSaved = "Information sauvegardé"
+        self.taxeChoseButton = "Choisir"
+        self.errorNoTaxe = "Vous devez choisir une taxe!"
+        self.taxeNameLabel = "Taxe :"
+        self.taxeDescription = "Numéro :"
+        self.taxeRates = "Taux(%) :"
+        self.taxeEditButton = "Modifier"
+        self.taxeChanged = "Modification apporté"
         
 sysConfig = sysConfigScreen()

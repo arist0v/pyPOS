@@ -32,12 +32,14 @@ currently working on config page:
     -cash bank
 -configuration section:
     -database backup/restore from .sql file
-    -taxes add/delete
+    -taxes add/delete(add delete to do, view edit done)
     -taxes group add/delete groupe
     -taxes group add/delete taxes from group
     -taxes group cascade taxe + order to apply it
         
 LATER:
-create a setup.py for installation -Gui
+create a setup.py for installation -Gui:
+	-file to /usr/share
+	-symlink of pyPOS.py to /usr/bin
 create englishUS language pack
 create help button on different pag
