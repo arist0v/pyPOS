@@ -875,9 +875,13 @@ function to open the system configuration
 def sysConfig():
     
     state="disabled"
+    state2="disabled"
     
     if (connectedUser.level == 3):#if user is admin
-        state="normal"#he can add new user 
+        state="normal"#enable admin only config
+        
+    if (connectedUser.level == 2 or connectedUser.level == 3):#if user is manager or admin
+        state2="normal"#enable manager nor admin config
     
     try:
         bottomFrame.destroy()#try to destroy bottomFram if exist
@@ -904,10 +908,15 @@ def sysConfig():
     rightSubFrame = tk.Frame(bottomFrame)
     
     languageButton = tk.Button(leftSubFrame, text=text.sysConfig.menuLanguage, width=15, command= lambda: langConfig())
+    languageButton.config(state=state2)
     shopInfoButton = tk.Button(leftSubFrame, text=text.sysConfig.menuShopInfo, width=15)
+    shopInfoButton.config(state=state)
     databaseButton = tk.Button(leftSubFrame, text=text.sysConfig.menuDatabase, width=15)
+    databaseButton.config(state=state)
     taxeButton = tk.Button(leftSubFrame, text=text.sysConfig.menuTaxe, width=15)
+    taxeButton.config(state=state2)
     taxeGroupButton = tk.Button(leftSubFrame, text=text.sysConfig.menuTaxeGroup, width=15)
+    taxeGroupButton.config(state=state2)
     
     shopInfoButton.grid(row=1, column=1)
     taxeButton.grid(row=2,column=1)
@@ -965,17 +974,7 @@ def langConfig():
     languageMenu.grid(row=2, column=2, pady=(5,0))    
     
     rightSubFrame.pack(fill="x", pady=(5,0))
-    
-'''
-TODO:
-
-Configuration du system
--langue
--devise
--taxe
-
-'''
-    
+        
 '''
 function to get all the language files available in the languages folder
 '''
