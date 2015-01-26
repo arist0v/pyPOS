@@ -60,17 +60,13 @@ def language():
             
     return language#return the language from the database result
 '''
-import the specied language pack
-
-add new language by adding similar elif
+import the language pack specified in the DB
 '''
 
-if (language() == "frCA"):#if language is French Canadian
-    import Languages.language_frCA as text#import the language file
-else:
-    print "Wrong Language"
-    sys.exit(1)
-      
+langFile = "Languages.language_" + language()
+__import__(langFile)
+text = sys.modules[langFile]
+     
 '''
 function to encrypt password
 '''
@@ -961,20 +957,53 @@ def langConfig():
     global rightSubFrame  
     rightSubFrame = tk.Frame(bottomFrame)#recreate a new bottom frame
     
-    titleLabel = tk.Label(rightSubFrame, text=text.sysConfig.titleLabel, font=(16))
-    languageLabel = tk.Label(rightSubFrame, text=text.sysConfig.languageLabel)  
+    languageTitleLabel = tk.Label(rightSubFrame, text=text.sysConfig.languageTitleLabel, font=(16))
+    languageLabel = tk.Label(rightSubFrame, text=text.sysConfig.languageLabel)
+    languageSaveButton = tk.Button(rightSubFrame, text=text.sysConfig.languageSaveButton, command= lambda: saveLanguage(languageField.get()))  
     
     languageMenu = tk.OptionMenu(rightSubFrame, languageField, *availableLanguages)
     languageMenu["menu"].config(bg="white")
     languageMenu.configure(width=26, bg="white")
     languageField.set(defaultLanguage)
     
-    titleLabel.grid(row=1, column=1, columnspan=2)
+    
+    languageTitleLabel.grid(row=1, column=1, columnspan=2)
     languageLabel.grid(row=2, column=1, pady=(5,0))
     languageMenu.grid(row=2, column=2, pady=(5,0))    
+    languageSaveButton.grid(row=3, column=1, pady=(5,0), columnspan=2)
     
     rightSubFrame.pack(fill="x", pady=(5,0))
+    
+'''
+function to save language configuration
+'''
+def saveLanguage(language):
+    
+    #import the next language pack to display nex reboot message
+    langFile = "Languages.language_" + language
+    __import__(langFile)
+    nextLang = sys.modules[langFile]
+    
+    sql = """UPDATE sysConfig SET language = '{0}' WHERE id = 1""".format(language)
+    
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
         
+        cursor= connection.cursor()
+        
+        cursor.execute(sql)#request to save language selection
+            
+        connection.commit()#commit language
+           
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+    tkm.showinfo("", nextLang.sysConfig.nextRebootText)
+    
 '''
 function to get all the language files available in the languages folder
 '''

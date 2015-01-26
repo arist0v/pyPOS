@@ -163,7 +163,9 @@ class sysConfigScreen:
         self.menuTaxe = "Taxe"#tax configuration menu button
         self.menuTaxeGroup = "Groupe de taxes"#taxes group configuration menu button
         self.menuShopInfo = "Info Boutique"#shop info configurations
-        self.titleLabel = "Configuration du système"
+        self.languageTitleLabel = "Configuration de la langue"#title of language config
         self.languageLabel = "Langue :"
+        self.languageSaveButton = "Sauvegarder"
+        self.nextRebootText = "Les modifications seront apportées au prochain démarrage de l'application."
         
 sysConfig = sysConfigScreen()
