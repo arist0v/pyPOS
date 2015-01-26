@@ -158,6 +158,11 @@ text for the systeme configuration screen
 class sysConfigScreen:
     
     def __init__(self):
+        self.menuLanguage = "Langue"#menu button for language config
+        self.menuDatabase = "Base de données"#database configuration menu buttun
+        self.menuTaxe = "Taxe"#tax configuration menu button
+        self.menuTaxeGroup = "Groupe de taxes"#taxes group configuration menu button
+        self.menuShopInfo = "Info Boutique"#shop info configurations
         self.titleLabel = "Configuration du système"
         self.languageLabel = "Langue :"
         

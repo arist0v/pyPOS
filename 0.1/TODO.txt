@@ -1,0 +1,55 @@
+
+'''
+##################TODO LIST##################
+item with * for version 0.2 : having a base program working asap
+currently working on config page:
+
+-align main menu to center 
+
+-sales section
+-client section:
+    -client information
+    -type of hourly rate
+    -find old invoice
+    -print contract(i.e: pentest agrement)*
+-inventory section:
+    -item*
+    -groups(ie:a computer is made of multiple item)
+    -category*
+    -services
+    -rebate section
+-report section*
+    -day sale
+    -year sale
+    -month sale
+    -day profit
+    -month profit
+    -year profit
+    -taxes report
+    -inventory report
+    -bank section
+    -hours bank
+    -cash bank
+-configuration section:
+    -move current work into a menu section
+    -Menu of the section
+    -database backup/restore from .sql file
+    -taxes add/delete
+    -taxes groupe add/delete groupe
+    -taxes groupe add/delete taxes from group
+    -taxes groupe cascade taxe + order to apply it
+    -finish language settings
+    -Buisness information(name adresse etc...):
+    	-Shop name
+    	-address
+    	-phone
+    	-postal code
+    	-City
+    	-Province/state(definend by language)
+    	-email
+
+    
+LATER:
+create a setup.py for installation
+create englishUS language pack
+create help button on different pag

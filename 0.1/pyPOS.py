@@ -10,51 +10,6 @@ Main file of the system
 #test passowrd: Tomate42
 '''
 
-'''
-##################TODO LIST##################
-item with * for version 0.2 : having a base program working asap
-currently working on config page:
-
--sales section
--client section:
-    -client information
-    -find old invoice
-    -print contract(i.e: pentest agrement)*
--inventory section:
-    -item*
-    -groups(ie:a computer is made of multiple item)
-    -category*
-    -services
--report section*
-    -day sale
-    -year sale
-    -month sale
-    -day profit
-    -month profit
-    -year profit
-    -taxes report
-    -inventory report
-    -bank section
-    -hours bank
-    -cash bank
--configuration section:
-    -move current work into a menu section
-    -Menu of the section
-    -database backup/restore from .sql file
-    -taxes add/delete
-    -taxes groupe add/delete groupe
-    -taxes groupe add/delete taxes from group
-    -taxes groupe cascade taxe + order to apply it
-    -finish language settings
-    -Buisness information(name adresse etc...)
-
-    
-LATER:
-create a setup.py for installation
-create englishUS language pack
-create help button on different page
-'''
-
 import MySQLdb as mdb#import mysqldb library
 import sys#import system database
 import dbConfig#import personnal lib dbconfig
@@ -913,11 +868,61 @@ def saveNewUser(firstName, lastName, email, adminLevel, username, password, conf
             tkm.showerror(text.newUser.errorTitle, warningMessage)
     else:                
         tkm.showerror(text.newUser.errorTitle, warningMessage)
+        
+'''
+function to open the system configuration
+'''
+def sysConfig():
+    
+    state="disabled"
+    
+    if (connectedUser.level == 3):#if user is admin
+        state="normal"#he can add new user 
+    
+    try:
+        bottomFrame.destroy()#try to destroy bottomFram if exist
+    except:
+        pass
+    
+    try:
+        rightSubFrame.destroy()#try to destroy right frame if exist
+    except:
+        pass
+    
+    try:
+        leftSubFrame.destroy()#try to destroy left fream if exist
+    except:
+        pass
+    
+    global bottomFrame  
+    bottomFrame = tk.Frame(mainFrame)#recreate a new bottom frame
+    
+    global leftSubFrame
+    leftSubFrame = tk.Frame(bottomFrame, borderwidth=5)
+    
+    global rightSubFrame
+    rightSubFrame = tk.Frame(bottomFrame)
+    
+    languageButton = tk.Button(leftSubFrame, text=text.sysConfig.menuLanguage, width=15, command= lambda: langConfig())
+    shopInfoButton = tk.Button(leftSubFrame, text=text.sysConfig.menuShopInfo, width=15)
+    databaseButton = tk.Button(leftSubFrame, text=text.sysConfig.menuDatabase, width=15)
+    taxeButton = tk.Button(leftSubFrame, text=text.sysConfig.menuTaxe, width=15)
+    taxeGroupButton = tk.Button(leftSubFrame, text=text.sysConfig.menuTaxeGroup, width=15)
+    
+    shopInfoButton.grid(row=1, column=1)
+    taxeButton.grid(row=2,column=1)
+    taxeGroupButton.grid(row=3, column=1)
+    languageButton.grid(row=4,column=1)    
+    databaseButton.grid(row=5, column=1)    
+    
+    rightSubFrame.pack(fill="both")
+    leftSubFrame.pack(side="left", anchor="w", fill="y")   
+    bottomFrame.pack(side="bottom", fill="x")
     
 '''
-function to show the systeme configuration
+function to show the language configuration
 '''        
-def sysConfig():
+def langConfig():
     
     availableLanguages = getLanguages()#get table of all available language pack in folder
     languageField = tk.StringVar()
@@ -940,17 +945,17 @@ def sysConfig():
             connection.close()  
     
     try:
-        bottomFrame.destroy()#try to destroy bottomFram if exist
+        rightSubFrame.destroy()#try to destroy bottomFram if exist
     except:
         pass
     
-    global bottomFrame  
-    bottomFrame = tk.Frame(mainFrame)#recreate a new bottom frame
+    global rightSubFrame  
+    rightSubFrame = tk.Frame(bottomFrame)#recreate a new bottom frame
     
-    titleLabel = tk.Label(bottomFrame, text=text.sysConfig.titleLabel, font=(16))
-    languageLabel = tk.Label(bottomFrame, text=text.sysConfig.languageLabel)  
+    titleLabel = tk.Label(rightSubFrame, text=text.sysConfig.titleLabel, font=(16))
+    languageLabel = tk.Label(rightSubFrame, text=text.sysConfig.languageLabel)  
     
-    languageMenu = tk.OptionMenu(bottomFrame, languageField, *availableLanguages)
+    languageMenu = tk.OptionMenu(rightSubFrame, languageField, *availableLanguages)
     languageMenu["menu"].config(bg="white")
     languageMenu.configure(width=26, bg="white")
     languageField.set(defaultLanguage)
@@ -959,7 +964,7 @@ def sysConfig():
     languageLabel.grid(row=2, column=1, pady=(5,0))
     languageMenu.grid(row=2, column=2, pady=(5,0))    
     
-    bottomFrame.pack(side="bottom", fill="x", pady=(5,0))
+    rightSubFrame.pack(fill="x", pady=(5,0))
     
 '''
 TODO:
