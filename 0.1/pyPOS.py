@@ -984,8 +984,8 @@ def groupTaxeInfo():
     groupTaxeNewButton = tk.Button(rightSubFrame, text=text.sysConfig.newGroupTaxeButton, command=lambda: newTaxe())
         
     groupTaxeMenu.grid(row=1, column=1, pady=(5,0))
-    groupTaxeChoseButton.grid(row=1, column=2, pady=(5,0), padx=(31,31))
-    groupTaxeNewButton.grid(row=1, column=3, pady=(5,0), padx=(5,0))
+    groupTaxeChoseButton.grid(row=1, column=2, pady=(5,0), padx=90)
+    groupTaxeNewButton.grid(row=1, column=3, pady=(5,0), padx=(5,0), columnspan=2)
     
     rightSubFrame.pack(fill="x", pady=(5,0))
     
@@ -1017,7 +1017,37 @@ def groupTaxeDetails(groupTaxe):
     finally:
         if connection:
             connection.close()   
+       
+    groupNameData = tk.StringVar()
+    groupCascadeData = tk.BooleanVar()
+    groupMemberData = tk.StringVar()
+       
+    groupNameLabel = tk.Label(rightSubFrame, text=text.sysConfig.groupNameLabel)
+    groupNameField = tk.Entry(rightSubFrame, textvariable= groupNameData, bg="white", width=30)
+    groupNameField.delete(0, "end")
+    groupNameField.insert(0, groupTaxeData[1])
     
+    groupCascadeData.set(1)
+    
+    groupCascadeLabel = tk.Label(rightSubFrame, text=text.sysConfig.groupCascadeLabel)
+    groupCascadeCheck = tk.Checkbutton(rightSubFrame,onvalue=1, offvalue=0, variable=groupCascadeData)
+    
+    groupCascadeCheck.deselect()
+    groupCascadeCheck.select()
+    print groupCascadeData.get()
+
+    '''
+    if groupTaxeData[2]:
+        groupCascadeCheck.set(True)
+    else:
+        groupCascadeCheck.set(False)
+        '''
+                
+    groupNameLabel.grid(row=2, column=1, pady=(5,0))
+    groupNameField.grid(row=2, column=2, pady=(5,0))
+    
+    groupCascadeLabel.grid(row=2, column=3, pady=(5,0))
+    groupCascadeCheck.grid(row=2, column=4, pady=(5,0))
     
 '''
 function to open taxe information
