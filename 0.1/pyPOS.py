@@ -997,8 +997,28 @@ def groupTaxeDetails(groupTaxe):
             
     if groupTaxe == "":
         tkm.showerror("", text.sysConfig.errorNoGroupTaxe)
-        return   
- 
+        return
+    
+    sql = """SELECT * FROM groupTaxe WHERE groupName = '{0}'""".format(groupTaxe)
+    
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute(sql)#request to get taxe information
+        
+        groupTaxeData = cursor.fetchone()
+                               
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()   
+    
+    
 '''
 function to open taxe information
 '''
