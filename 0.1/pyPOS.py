@@ -264,9 +264,9 @@ def menuScreen():
     logoutButton = tk.Button(upperFrame, text=text.menu.logout, command=lambda : sysLogout(), borderwidth=1)
     
 
-    userButton.grid(row=1, column=1)
-    configButton.grid(row=1, column=2)
-    logoutButton.grid(row=1, column=3)
+    userButton.grid(row=1, column=1, padx=(5,0))
+    configButton.grid(row=1, column=2, padx=(5,0))
+    logoutButton.grid(row=1, column=3, padx=(5,0))
     
     upperFrame.pack(side="top", fill="x")
     bottomFrame.pack(side="bottom", fill="x")
@@ -911,7 +911,7 @@ def sysConfig():
     databaseButton.config(state=state)
     taxeButton = tk.Button(leftSubFrame, text=text.sysConfig.menuTaxe, width=15, command= lambda: taxeInfo())
     taxeButton.config(state=state2)
-    taxeGroupButton = tk.Button(leftSubFrame, text=text.sysConfig.menuTaxeGroup, width=15)
+    taxeGroupButton = tk.Button(leftSubFrame, text=text.sysConfig.menuTaxeGroup, width=15, command= lambda: groupTaxeInfo())
     taxeGroupButton.config(state=state2)
     
     storeInfoButton.grid(row=1, column=1, pady=(5,0))
@@ -924,6 +924,81 @@ def sysConfig():
     leftSubFrame.pack(side="left", anchor="w", fill="y")   
     bottomFrame.pack(side="bottom", fill="x")
     
+'''
+function to open group taxe information
+'''
+def groupTaxeInfo():
+        
+    state = "disabled"
+    
+    groupTaxeField= tk.StringVar()
+    
+    if (connectedUser.level == 3):
+        state = "normal"
+    
+    try:
+        rightSubFrame.destroy()#try to destroy bottomFram if exist
+    except:
+        pass
+    
+    global rightSubFrame  
+    rightSubFrame = tk.Frame(bottomFrame)#recreate a new bottom frame
+    
+    sql = """SELECT * FROM groupTaxe"""
+    
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute(sql)#request to save user password
+        
+        groupTaxeData = cursor.fetchall()
+                               
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+            
+     
+    groupTaxeTable = []
+    
+    if groupTaxeData == ():
+        groupTaxeTable.append("")
+    else:
+    
+        i = 0
+    
+        for groupTaxe in groupTaxeData:
+            groupTaxeTable.append(groupTaxeData[i][1])
+            i = i + 1
+            
+    groupTaxeMenu = tk.OptionMenu(rightSubFrame, groupTaxeField, *groupTaxeTable)
+    groupTaxeMenu["menu"].config(bg="white")
+    groupTaxeMenu.configure(width=26, bg="white")
+    
+    groupTaxeChoseButton = tk.Button(rightSubFrame, text=text.sysConfig.groupTaxeChooseButton, command= lambda: groupTaxeDetails(groupTaxeField.get()))
+    groupTaxeNewButton = tk.Button(rightSubFrame, text=text.sysConfig.newGroupTaxeButton, command=lambda: newTaxe())
+        
+    groupTaxeMenu.grid(row=1, column=1, pady=(5,0))
+    groupTaxeChoseButton.grid(row=1, column=2, pady=(5,0), padx=(31,31))
+    groupTaxeNewButton.grid(row=1, column=3, pady=(5,0), padx=(5,0))
+    
+    rightSubFrame.pack(fill="x", pady=(5,0))
+    
+'''
+function to show details of group taxe
+'''
+
+def groupTaxeDetails(groupTaxe):
+            
+    if groupTaxe == "":
+        tkm.showerror("", text.sysConfig.errorNoGroupTaxe)
+        return   
+ 
 '''
 function to open taxe information
 '''
@@ -984,21 +1059,88 @@ def taxeInfo():
     taxeMenu.configure(width=26, bg="white")
     
     taxeChoseButton = tk.Button(rightSubFrame, text=text.sysConfig.taxeChoseButton, command= lambda: taxeDetails(taxeField.get()))
-    
-    taxeChoseButton.grid(row=1, column=2, pady=(5,0), padx=(100,90))
+    taxeNewButton = tk.Button(rightSubFrame, text=text.sysConfig.taxeNewButton, command=lambda: newTaxe())
+        
     taxeMenu.grid(row=1, column=1, pady=(5,0))
+    taxeChoseButton.grid(row=1, column=2, pady=(5,0), padx=(31,31))
+    taxeNewButton.grid(row=1, column=3, pady=(5,0), padx=(5,0))
+    
     rightSubFrame.pack(fill="x", pady=(5,0))
+    
+'''
+function to add a new tax to the system
+'''
+
+def newTaxe():
+    
+    global newTaxeWindow
+    
+    taxeNameData = tk.StringVar()
+    taxeDescriptionData = tk.StringVar()
+    taxeRateData= tk.StringVar()
+    
+    newTaxeWindow = tk.Toplevel(window)
+    newTaxeWindow.title(text.sysConfig.newTaxeWindowTitle)
+    
+    taxeNameLabel = tk.Label(newTaxeWindow, text=text.sysConfig.taxeNameLabel)
+    taxeNameField = tk.Entry(newTaxeWindow, textvariable= taxeNameData, bg="white", width=30)
+    taxeNameField.focus()
+    
+    taxeDescriptionLabel = tk.Label(newTaxeWindow, text=text.sysConfig.taxeDescription)
+    taxeDescriptionField = tk.Entry(newTaxeWindow, textvariable= taxeDescriptionData, bg="white", width=30)
+    
+    taxeRateLabel = tk.Label(newTaxeWindow, text=text.sysConfig.taxeRates)
+    taxeRateField = tk.Entry(newTaxeWindow, textvariable=taxeRateData, bg="white", width=30)
+    
+    taxeSaveButton = tk.Button(newTaxeWindow, text=text.sysConfig.saveNewTaxe, command=lambda :saveNewTaxe(taxeNameData.get(), taxeDescriptionData.get(), taxeRateData.get()))
+    taxeCancelButton = tk.Button(newTaxeWindow, text=text.sysConfig.cancelNewTaxe, command= lambda: newTaxeWindow.destroy())
+    
+    taxeNameLabel.grid(row=1, column=1, pady=(5,0))
+    taxeNameField.grid(row=1, column=2, pady=(5,0), padx=(0,25))
+    
+    taxeDescriptionLabel.grid(row=2, column=1, pady=(5,0))
+    taxeDescriptionField.grid(row=2, column=2, pady=(5,0), padx=(0,25))
+    
+    taxeRateLabel.grid(row=3, column=1, pady=(5,0))
+    taxeRateField.grid(row=3, column=2, pady=(5,0), padx=(0,25))
+    
+    taxeSaveButton.grid(row=4, column=1, pady=(5,0), padx=(25,0))
+    taxeCancelButton.grid(row=4, column=2, pady=(5,0))
+    
+'''
+function to save new taxe
+'''
+def saveNewTaxe(name, description, rate):
+    sql = """INSERT INTO Taxes(Taxe, Description, Rate) VALUES('{0}', '{1}', '{2}')""".format(name, description, rate)
+    
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute(sql)#request to save taxe info
+            
+        connection.commit()#commit change
+          
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+            
+    tkm.showinfo("", text.sysConfig.newTaxeSaved)
+    
+    newTaxeWindow.destroy()
+    taxeInfo()
     
 '''
 function to show taxe details
 '''
 
 def taxeDetails(taxe):
-    
-    #taxeNameData = tk.StringVar()
-    #taxeDescriptionData = tk.StringVar()
-    #taxeRateData= tk.StringVar()
-        
+            
     if taxe == "":
         tkm.showerror("", text.sysConfig.errorNoTaxe)
         return
@@ -1038,17 +1180,20 @@ def taxeDetails(taxe):
     taxeRateField.insert(0, taxeData[3])
     
     taxeEditButton = tk.Button(rightSubFrame, text=text.sysConfig.taxeEditButton, command= lambda: saveTaxeChange(taxeData[0], taxeNameData.get(), taxeDescriptionData.get(), taxeRateData.get()))
-    
+    taxeDeleteButton = tk.Button(rightSubFrame, text=text.sysConfig.taxeDeleteButton)
+        
     taxeNameLabel.grid(row=2, column=1, pady=(5,0))
-    taxeNameField.grid(row=2, column=2, pady=(5,0))
+    taxeNameField.grid(row=2, column=2, pady=(5,0), columnspan=2)
+    
     
     taxeDescriptionLabel.grid(row=3, column=1, pady=(5,0))
-    taxeDescriptionField.grid(row=3, column=2, pady=(5,0))
+    taxeDescriptionField.grid(row=3, column=2, pady=(5,0), columnspan=2)
     
     taxeRateLabel.grid(row=4, column=1, pady=(5,0))
-    taxeRateField.grid(row=4, column=2, pady=(5,0))
+    taxeRateField.grid(row=4, column=2, pady=(5,0), columnspan=2)
     
     taxeEditButton.grid(row=5, column=1, pady=(5,0), columnspan=2)
+    taxeDeleteButton.grid(row=5, column=2, pady=(5,0), columnspan=2)
     
 '''
 function to save the modification made on taxe

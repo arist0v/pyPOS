@@ -32,7 +32,7 @@ currently working on config page:
     -cash bank
 -configuration section:
     -database backup/restore from .sql file
-    -taxes add/delete(add delete to do, view edit done)
+    -taxes delete(delete to do)
     -taxes group add/delete groupe
     -taxes group add/delete taxes from group
     -taxes group cascade taxe + order to apply it

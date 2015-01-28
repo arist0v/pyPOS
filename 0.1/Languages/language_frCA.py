@@ -184,5 +184,14 @@ class sysConfigScreen:
         self.taxeRates = "Taux(%) :"
         self.taxeEditButton = "Modifier"
         self.taxeChanged = "Modification apporté"
+        self.taxeNewButton = "Nouvelle taxe"
+        self.taxeDeleteButton = "Supprimer"
+        self.newTaxeWindowTitle = "Ajout d'une nouvelle taxe"
+        self.saveNewTaxe = "Sauvegarder"
+        self.cancelNewTaxe = "Annuler"
+        self.newTaxeSaved = "Nouvelle taxe ajouté!"
+        self.newGroupTaxeButton = "Nouveau Groupe de taxes"
+        self.groupTaxeChooseButton = "Choisir"
+        self.errorNoGroupTaxe = "Vous devez choisir un groupe"
         
 sysConfig = sysConfigScreen()
