@@ -33,9 +33,8 @@ currently working on config page:
 -configuration section:
     -database backup/restore from .sql file
     -taxes delete(delete to do)
-    -taxes group add/delete groupe
-    -taxes group add/delete taxes from group
-    -taxes group cascade taxe + order to apply it
+    -taxes group delete groupe
+    -taxes group delete taxes from group
         
 LATER:
 create a setup.py for installation -Gui:
