@@ -1159,6 +1159,8 @@ def groupTaxeDetails(groupTaxe):
 function to add taxe to group
 ''' 
 def addTaxeToGroup(groupID):
+    
+    global addTaxeWindow
     addTaxeWindow = tk.Toplevel(window)
     addTaxeWindow.title(text.sysConfig.addTaxeWindow)
     addTaxeWindow.geometry("400x75+0+0")
@@ -1211,13 +1213,84 @@ def addTaxeToGroup(groupID):
     
     taxeMenu = tk.OptionMenu(addTaxeWindow, selectedTaxe, *availabeTaxe)
     taxeMenLabel = tk.Label(addTaxeWindow, text=text.sysConfig.chooseTaxe)
-    addButton = tk.Button(addTaxeWindow, text=text.sysConfig.addMemberButton)
+    addButton = tk.Button(addTaxeWindow, text=text.sysConfig.addMemberButton, command=lambda: saveAdditionGroup(groupID, selectedTaxe.get()))
     cancelButton = tk.Button(addTaxeWindow, text=text.sysConfig.cancelButton, command=lambda: addTaxeWindow.destroy())
     
     taxeMenLabel.grid(row=1, column=1)
     taxeMenu.grid(row=1, column=2)
     addButton.grid(row=2, column=1)
     cancelButton.grid(row=2, column=2)
+    
+'''
+function to save the new taxe in the group
+'''
+    
+def saveAdditionGroup(groupID, taxeID):
+    
+    if taxeID == "":
+        tkm.showerror("", text.sysConfig.noTaxe)
+        return
+    
+    sql = "SELECT MAX(priority) FROM taxesGroupTaxe WHERE groupTaxeID = '{0}'".format(groupID)
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute(sql)#request to get taxe information
+        
+        maxPriority = cursor.fetchone()
+                              
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+    max= maxPriority[0]
+    sql = "INSERT INTO taxesGroupTaxe(taxesID, groupTaxeID, priority) VALUES('{0}', '{1}', '{2}')".format(taxeID[2], groupID, max+1)
+    
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute(sql)#request to save taxe info
+            
+        connection.commit()#commit change
+          
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+    
+    sql = "SELECT * FROM groupTaxe WHERE ID = '{0}'".format(groupID)
+    
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute(sql)#request to get taxe information
+        
+        groupeData = cursor.fetchone()
+                              
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+                  
+    tkm.showinfo("", text.sysConfig.taxeAdded)
+    groupTaxeDetails(groupeData[1])
+    addTaxeWindow.destroy()
+    
     
 '''
 function to open taxe information

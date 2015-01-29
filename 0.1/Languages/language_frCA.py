@@ -208,5 +208,7 @@ class sysConfigScreen:
         self.deleteGroup = "Supprimer"
         self.chooseTaxe = "Choisissez une taxe :"
         self.cancelButton= "Annuler"
+        self.noTaxe = "Vous devez choisir une taxe"
+        self.taxeAdded = "Taxe ajouté au groupe"
         
 sysConfig = sysConfigScreen()
