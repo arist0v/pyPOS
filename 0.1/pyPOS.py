@@ -165,15 +165,18 @@ def loginScreen():
     usernameField = tk.Entry(formFrame, textvariable=username, width=30, bg="white")
     usernameField.bind('<Return>', lambda x: auth())#bind Return key when focus on username field
     usernameField.bind('<KP_Enter>', lambda x: auth())#numpad enter
+    usernameField.bind('<Key-Escape>', lambda x: window.quit())
     usernameField.focus()#set focuse on username first
     passwordLabel = tk.Label(formFrame, text=text.login.password)
     passwordField = tk.Entry(formFrame, textvariable=password, width=30, show="*", bg="white")
     passwordField.bind('<Return>', lambda x: auth())#bind Return key when focus on password field
     passwordField.bind('<KP_Enter>', lambda x: auth())#numpad enter
+    passwordField.bind('<Escape>',lambda x: window.quit())
     
     loginButton = tk.Button(buttonFrame, text=text.login.login, command= lambda: auth())#create login button
     loginButton.bind('<Return>', lambda x: auth())#bind Return key when focus on username field
     loginButton.bind('<KP_Enter>', lambda x: auth())#numpad enter
+    loginButton.bind('<Escape>',lambda x: window.quit())
     quitButton = tk.Button(buttonFrame, text=text.login.quit, command=window.quit)#create quit button
     licenceLabel = tk.Label(formFrame, text=text.login.licence)
     licenceLabel.bind("<Button-1>",lambda x: showLicence())
