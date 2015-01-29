@@ -196,7 +196,15 @@ class sysConfigScreen:
         self.groupTaxeChooseButton = "Choisir"
         self.errorNoGroupTaxe = "Vous devez choisir un groupe"
         self.groupNameLabel = "Nom du groupe :"
-        self.groupCascadeLabel = "Cascade :"
-        
+        self.groupCascadeLabel = "Cascade"
+        self.cascadeYes = "Oui"
+        self.cascadeNo = "Non"
+        self.addMemberButton = "Ajouter"
+        self.upMemberButton = "Monter"
+        self.downMemberButton = "Descendre"
+        self.removeMemberButton = "Supprimer"
+        self.addTaxeWindow = "Ajouter une taxe au groupe"
+        self.saveGroup = "Sauvegarder"
+        self.deleteGroup = "Supprimer"
         
 sysConfig = sysConfigScreen()

@@ -174,11 +174,11 @@ def loginScreen():
     passwordField.bind('<KP_Enter>', lambda x: auth())#numpad enter
     passwordField.bind('<Escape>',lambda x: window.quit())
     
-    loginButton = tk.Button(buttonFrame, text=text.login.login, command= lambda: auth())#create login button
+    loginButton = tk.Button(buttonFrame, text=text.login.login, command= lambda: auth(), width=10)#create login button
     loginButton.bind('<Return>', lambda x: auth())#bind Return key when focus on username field
     loginButton.bind('<KP_Enter>', lambda x: auth())#numpad enter
     loginButton.bind('<Escape>',lambda x: window.quit())
-    quitButton = tk.Button(buttonFrame, text=text.login.quit, command=window.quit)#create quit button
+    quitButton = tk.Button(buttonFrame, text=text.login.quit, command=window.quit, width=10)#create quit button
     licenceLabel = tk.Label(formFrame, text=text.login.licence)
     licenceLabel.bind("<Button-1>",lambda x: showLicence())
     
@@ -276,10 +276,10 @@ def menuScreen():
     global bottomFrame
     bottomFrame = tk.Frame(mainFrame)#genereate the bottom frame
     
-    userButton = tk.Button(menuFrame, text=text.menu.user, command= lambda: userManager(), borderwidth=1)
-    configButton = tk.Button(menuFrame, text=text.menu.config, command=lambda: sysConfig())
+    userButton = tk.Button(menuFrame,width=10, text=text.menu.user, command= lambda: userManager(), borderwidth=1)
+    configButton = tk.Button(menuFrame,width=10, text=text.menu.config, command=lambda: sysConfig())
     configButton.config(state=state)
-    logoutButton = tk.Button(menuFrame, text=text.menu.logout, command=lambda : sysLogout(), borderwidth=1)
+    logoutButton = tk.Button(menuFrame,width=10, text=text.menu.logout, command=lambda : sysLogout(), borderwidth=1)
     userLoggedLabel = tk.Label(upperFrame, text=text.menu.userLogged + connectedUser.username)
     
     '''
@@ -1064,35 +1064,103 @@ def groupTaxeDetails(groupTaxe):
             connection.close()   
        
     groupNameData = tk.StringVar()
-    groupCascadeData = tk.BooleanVar()
+    groupCascadeData = tk.StringVar()
     groupMemberData = tk.StringVar()
+    
+    radioButtonFrame= tk.Frame(rightSubFrame, relief="ridge", borderwidth=3)
+    memberButtonFrame = tk.Frame(rightSubFrame)
+    groupButtonFrame = tk.Frame(rightSubFrame)
        
     groupNameLabel = tk.Label(rightSubFrame, text=text.sysConfig.groupNameLabel)
     groupNameField = tk.Entry(rightSubFrame, textvariable= groupNameData, bg="white", width=30)
     groupNameField.delete(0, "end")
     groupNameField.insert(0, groupTaxeData[1])
+        
+    groupCascadeLabel = tk.Label(radioButtonFrame, text=text.sysConfig.groupCascadeLabel)
     
-    groupCascadeData.set(1)
+    groupCascadeMenu = tk.OptionMenu(radioButtonFrame, groupCascadeData, text.sysConfig.cascadeYes, text.sysConfig.cascadeNo)
     
-    groupCascadeLabel = tk.Label(rightSubFrame, text=text.sysConfig.groupCascadeLabel)
-    groupCascadeCheck = tk.Checkbutton(rightSubFrame,onvalue=1, offvalue=0, variable=groupCascadeData)
-    
-    groupCascadeCheck.deselect()
-    groupCascadeCheck.select()
-    print groupCascadeData.get()
-
-    '''
-    if groupTaxeData[2]:
-        groupCascadeCheck.set(True)
+    if groupTaxeData[2] == 1:
+        groupCascadeData.set(text.sysConfig.cascadeYes)
     else:
-        groupCascadeCheck.set(False)
-        '''
+        groupCascadeData.set(text.sysConfig.cascadeNo)
+        
+    groupMemberListBox = tk.Listbox(rightSubFrame, bg="white")
+    
+    sql = "SELECT * FROM taxesGroupTaxe WHERE groupTaxeID = '{0}' ORDER BY priority".format(groupTaxeData[0])
+    
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute(sql)#request to get taxe information
+        
+        memberList = cursor.fetchall()
+                              
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
                 
+    for member in memberList:
+        sql2 = "SELECT * FROM Taxes WHERE ID = '{0}'".format(member[1])
+        
+        try:        
+            connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+            cursor= connection.cursor()
+        
+            cursor.execute(sql2)#request to get taxe information
+        
+            memberTaxe = cursor.fetchone()
+                               
+        except mdb.Error, e:
+            print "Error: {0} {1}".format(e.args[0], e.args[1])
+            sys.exit(1)
+            
+        finally:
+            if connection:
+                connection.close()
+        groupMemberListBox.insert("end", memberTaxe[1]+":"+memberTaxe[2])
+        
+    addMemberButton = tk.Button(memberButtonFrame, width=10, text=text.sysConfig.addMemberButton, command=lambda: addTaxeToGroup(groupTaxeData[0]))
+    upMemberButton = tk.Button(memberButtonFrame, width=10, text=text.sysConfig.upMemberButton)
+    downMemberButton = tk.Button(memberButtonFrame, width=10, text=text.sysConfig.downMemberButton)
+    removeMemberButton = tk.Button(memberButtonFrame, width=10, text=text.sysConfig.removeMemberButton)
+         
     groupNameLabel.grid(row=2, column=1, pady=(5,0))
     groupNameField.grid(row=2, column=2, pady=(5,0))
     
-    groupCascadeLabel.grid(row=2, column=3, pady=(5,0))
-    groupCascadeCheck.grid(row=2, column=4, pady=(5,0))
+    radioButtonFrame.grid(row=2, column=3, pady=(5,0))
+    
+    groupCascadeLabel.grid(row=1, column=1, pady=(5,0))
+    groupCascadeMenu.grid(row=2, column=1, pady=(5,0))
+    
+    addMemberButton.grid(row=1, column=1, pady=(5,0))
+    upMemberButton.grid(row=2, column=1, pady=(5,0))
+    downMemberButton.grid(row=3, column=1, pady=(5,0))
+    removeMemberButton.grid(row=4, column=1, pady=(5,0))
+    
+    saveGroupButton = tk.Button(groupButtonFrame, text=text.sysConfig.saveGroup)
+    deleteGroupButton = tk.Button(groupButtonFrame, text=text.sysConfig.deleteGroup)
+    
+    saveGroupButton.grid(row=1, column=1)
+    deleteGroupButton.grid(row=1, column=2)
+    
+    groupMemberListBox.grid(row=3, column=2, pady=(5,0), columnspan=1)
+    memberButtonFrame.grid(row=3, column=1)
+    groupButtonFrame.grid(row=4, column=1, columnspan=3)
+    
+'''
+function to add taxe to group
+''' 
+def addTaxeToGroup(groupID):
+    addTaxeWindow = tk.Toplevel(window)
+    addTaxeWindow.title(text.sysConfig.addTaxeWindow)
     
 '''
 function to open taxe information
