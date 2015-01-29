@@ -304,7 +304,7 @@ def menuScreen():
     
     upperFrame.pack(side="top")
     menuFrame.pack()
-    bottomFrame.pack(side="bottom", fill="x", expand=True)
+    bottomFrame.pack(side="bottom", fill="both", expand=True)
     mainFrame.pack(fill="both", expand=True)
 
 
@@ -368,9 +368,12 @@ def userManager():
     userListLabel.grid(row=1, column=1)
     userList.grid(row=2, column=1, columnspan=1)
     addUserButton.grid(row=3, column=1, columnspan=1, pady=(5,0))
-    rightSubFrame.pack(fill="both", pady=25, side="right")
-    leftSubFrame.pack(side="left", anchor="w", fill="y")   
-    bottomFrame.pack(side="bottom", fill="x")
+    leftSubFrame.pack(side="left", fill="both", expand=True)
+    rightSubFrame.pack(fill="both",side="right", expand=True)
+    
+       
+
+    bottomFrame.pack(side="bottom", fill="y",anchor="w", expand=True)
     
 '''
 Function to get the list of all user in DB
@@ -510,7 +513,7 @@ def userData(user):
     deleteUserButton.grid(row=3, column=2, columnspan=2, pady=(20,0))
     saveButton.grid(row=3, column=4, columnspan=1, sticky="e", pady=(20,0))
     
-    rightSubFrame.pack(fill="both", pady=25)
+    rightSubFrame.pack(fill="both", expand=True, anchor="w")
     
 '''
 function to delete a user
@@ -958,9 +961,9 @@ def sysConfig():
     languageButton.grid(row=4,column=1, pady=(5,0))    
     databaseButton.grid(row=5, column=1, pady=(5,0))    
     
-    rightSubFrame.pack(fill="both")
-    leftSubFrame.pack(side="left", anchor="w", fill="y")   
-    bottomFrame.pack(side="bottom", fill="x")
+    rightSubFrame.pack(fill="both", side="right", expand=True)
+    leftSubFrame.pack(side="left", anchor="w", fill="y", expand=True)   
+    bottomFrame.pack(side="bottom", fill="y", anchor="w", expand=True)
     
 '''
 function to open group taxe information
@@ -1025,7 +1028,7 @@ def groupTaxeInfo():
     groupTaxeChoseButton.grid(row=1, column=2, pady=(5,0), padx=90)
     groupTaxeNewButton.grid(row=1, column=3, pady=(5,0), padx=(5,0), columnspan=2)
     
-    rightSubFrame.pack(fill="x", pady=(5,0))
+    rightSubFrame.pack(fill="x", pady=(5,0), expand=True, side="right", anchor="n")
     
 '''
 function to show details of group taxe
@@ -1153,7 +1156,7 @@ def taxeInfo():
     taxeChoseButton.grid(row=1, column=2, pady=(5,0), padx=(31,31))
     taxeNewButton.grid(row=1, column=3, pady=(5,0), padx=(5,0))
     
-    rightSubFrame.pack(fill="x", pady=(5,0))
+    rightSubFrame.pack(fill="x", pady=(5,0), expand=True, side="right", anchor="n")
     
 '''
 function to add a new tax to the system
@@ -1398,7 +1401,7 @@ def storeInfo():
     storePostalCodeField.grid(row=4, column=6, pady=(5,0))
     storeSaveButton.grid(row=5, column=1, columnspan=6, pady=(5,0))
     
-    rightSubFrame.pack(fill="x", pady=(5,0))
+    rightSubFrame.pack(fill="x", pady=(5,0), expand=True, side="right", anchor="n")
     
 '''
 function to save storeInfo
@@ -1474,7 +1477,7 @@ def langConfig():
     languageMenu.grid(row=2, column=2, pady=(5,0))    
     languageSaveButton.grid(row=3, column=1, pady=(5,0), columnspan=2)
     
-    rightSubFrame.pack(fill="x", pady=(5,0))
+    rightSubFrame.pack(fill="x", pady=(5,0), expand=True, side="right", anchor="n")
     
 '''
 function to save language configuration
