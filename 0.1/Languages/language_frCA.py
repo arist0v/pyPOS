@@ -206,5 +206,7 @@ class sysConfigScreen:
         self.addTaxeWindow = "Ajouter une taxe au groupe"
         self.saveGroup = "Sauvegarder"
         self.deleteGroup = "Supprimer"
+        self.chooseTaxe = "Choisissez une taxe :"
+        self.cancelButton= "Annuler"
         
 sysConfig = sysConfigScreen()

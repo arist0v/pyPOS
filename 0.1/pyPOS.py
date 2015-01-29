@@ -1161,6 +1161,63 @@ function to add taxe to group
 def addTaxeToGroup(groupID):
     addTaxeWindow = tk.Toplevel(window)
     addTaxeWindow.title(text.sysConfig.addTaxeWindow)
+    addTaxeWindow.geometry("400x75+0+0")
+    
+    availabeTaxe = []
+    selectedTaxe = tk.StringVar()
+    
+    sql = "SELECT * FROM Taxes"
+    
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute(sql)#request to get taxe information
+        
+        allTaxes = cursor.fetchall()
+                              
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+            
+    sql = "SELECT TaxesID FROM taxesGroupTaxe WHERE groupTaxeID = '{0}'". format(groupID)
+    
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute(sql)#request to get taxe information
+        
+        usedTaxes = cursor.fetchone()
+                              
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()    
+             
+    for taxe in allTaxes:
+                 
+        if not taxe[0] in usedTaxes:
+           availabeTaxe.append(taxe)
+    
+    taxeMenu = tk.OptionMenu(addTaxeWindow, selectedTaxe, *availabeTaxe)
+    taxeMenLabel = tk.Label(addTaxeWindow, text=text.sysConfig.chooseTaxe)
+    addButton = tk.Button(addTaxeWindow, text=text.sysConfig.addMemberButton)
+    cancelButton = tk.Button(addTaxeWindow, text=text.sysConfig.cancelButton, command=lambda: addTaxeWindow.destroy())
+    
+    taxeMenLabel.grid(row=1, column=1)
+    taxeMenu.grid(row=1, column=2)
+    addButton.grid(row=2, column=1)
+    cancelButton.grid(row=2, column=2)
     
 '''
 function to open taxe information
