@@ -58,6 +58,8 @@ class menuScreen:
         self.logout = "Déconnexion"#Logout Button
         self.user = "Utilisateur"#User menu button
         self.config = "Configuration"# configuration menu button
+        self.userLogged= "Utilisateur : "
+        self.locale = "fr_CA.utf8"#set the locale for the clock and date
         
 menu = menuScreen()
 

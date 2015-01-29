@@ -18,6 +18,8 @@ import datetime#import time library for dynamic hash generation
 import Tkinter as tk#import tkinter Library
 import tkMessageBox as tkm#import tk message box
 import os#import the OS function
+import time#import the time module
+import locale#import the local module
 
 global version#create global var for version number
 version = "0.1"#current version
@@ -94,13 +96,14 @@ def startProgram():
     global window
     window = tk.Tk()#create main windows
     window.wm_title(text.mainText.mainWindowTitle + " - " + version)#Title of windows
-    #global h#global height
-    #global w#blobal width
+    global h#global height
+    global w#blobal width
     h = window.winfo_screenheight()
     w = window.winfo_screenwidth()
+    window.geometry("{0}x{1}+0+0".format(w, h))#start maximized
     
-    window.geometry("{0}x{1}+0+0".format(w, h))
-    window.resizable(0, 0)
+    #window.attributes('-fullscreen', True)#start in full screen mode
+    #window.resizable(0, 0)#disable resize
 
 
     window.after(1, loginScreen())
@@ -146,44 +149,49 @@ def loginScreen():
     global mainFrame  
     mainFrame = tk.Frame(window)#genereate the main frame
     
+    global formFrame
+    formFrame = tk.Frame(mainFrame)
+    
+    global buttonFrame
+    buttonFrame = tk.Frame(formFrame)
+       
     global username#set a global username variable
     username = tk.StringVar()
     global password#set a global password variable
     password = tk.StringVar()
         
-    messageLabel = tk.Label(mainFrame, text=text.login.message)
-    usernameLabel = tk.Label(mainFrame, text=text.login.username)
-    usernameField = tk.Entry(mainFrame, textvariable=username, width=30, bg="white")
+    messageLabel = tk.Label(formFrame, text=text.login.message)
+    usernameLabel = tk.Label(formFrame, text=text.login.username)
+    usernameField = tk.Entry(formFrame, textvariable=username, width=30, bg="white")
     usernameField.bind('<Return>', lambda x: auth())#bind Return key when focus on username field
     usernameField.bind('<KP_Enter>', lambda x: auth())#numpad enter
     usernameField.focus()#set focuse on username first
-    passwordLabel = tk.Label(mainFrame, text=text.login.password)
-    passwordField = tk.Entry(mainFrame, textvariable=password, width=30, show="*", bg="white")
+    passwordLabel = tk.Label(formFrame, text=text.login.password)
+    passwordField = tk.Entry(formFrame, textvariable=password, width=30, show="*", bg="white")
     passwordField.bind('<Return>', lambda x: auth())#bind Return key when focus on password field
     passwordField.bind('<KP_Enter>', lambda x: auth())#numpad enter
     
-    loginButton = tk.Button(mainFrame, text=text.login.login, command= lambda: auth())#create login button
+    loginButton = tk.Button(buttonFrame, text=text.login.login, command= lambda: auth())#create login button
     loginButton.bind('<Return>', lambda x: auth())#bind Return key when focus on username field
     loginButton.bind('<KP_Enter>', lambda x: auth())#numpad enter
-    quitButton = tk.Button(mainFrame, text=text.login.quit, command=window.quit)#create quit button
-    licenceLabel = tk.Label(mainFrame, text=text.login.licence)
+    quitButton = tk.Button(buttonFrame, text=text.login.quit, command=window.quit)#create quit button
+    licenceLabel = tk.Label(formFrame, text=text.login.licence)
     licenceLabel.bind("<Button-1>",lambda x: showLicence())
     
     
-    messageLabel.grid(row=1)   
-    usernameLabel.grid(row=2)
-    usernameField.grid(row=3)
-    passwordLabel.grid(row=4)
-    passwordField.grid(row=5)
+    messageLabel.pack()
+    usernameLabel.pack()
+    usernameField.pack()
+    passwordLabel.pack()
+    passwordField.pack()
     
-    loginButton.grid(sticky="w", row=6, pady=5)
-    quitButton.grid(sticky="e", row=6, pady=5)
-    licenceLabel.grid(row=7)
-    mainFrame.pack(fill="both")
-    mainFrame.place(relx=.42, rely=.40)
+    loginButton.grid(sticky="w", row=1, column=1, pady=5)
+    quitButton.grid(sticky="e", row=1, column=2, pady=5)
+    buttonFrame.pack()
+    licenceLabel.pack()
+    formFrame.pack(anchor="center", expand=True)
+    mainFrame.pack(fill="both", expand=True)
     
-   
-
 '''
 function to auth user
 '''
@@ -235,8 +243,11 @@ def passCheck(dbPass, userPass):
     else:
         tkm.showerror("", text.login.invalidPass)#else show warning invalid password
 
+'''
+function to show the upper menu bar
+'''
 def menuScreen():
-    
+       
     state="disabled"
     
     if not connectedUser.logged:#if user acces this zone without beeing logged
@@ -251,26 +262,53 @@ def menuScreen():
     
     global mainFrame
     mainFrame = tk.Frame(window)#generate the main frame
-    
+
     global upperFrame
     upperFrame = tk.Frame(mainFrame, borderwidth=5)#genereate the upper frame
+
+    global menuFrame
+    menuFrame = tk.Frame(upperFrame)
     
     global bottomFrame
     bottomFrame = tk.Frame(mainFrame)#genereate the bottom frame
     
-    userButton = tk.Button(upperFrame, text=text.menu.user, command= lambda: userManager(), borderwidth=1)
-    configButton = tk.Button(upperFrame, text=text.menu.config, command=lambda: sysConfig())
+    userButton = tk.Button(menuFrame, text=text.menu.user, command= lambda: userManager(), borderwidth=1)
+    configButton = tk.Button(menuFrame, text=text.menu.config, command=lambda: sysConfig())
     configButton.config(state=state)
-    logoutButton = tk.Button(upperFrame, text=text.menu.logout, command=lambda : sysLogout(), borderwidth=1)
+    logoutButton = tk.Button(menuFrame, text=text.menu.logout, command=lambda : sysLogout(), borderwidth=1)
+    userLoggedLabel = tk.Label(upperFrame, text=text.menu.userLogged + connectedUser.username)
     
+    '''
+    sub-function to get and update clock on upper frame
+    '''
+    
+    def clock():
+        locale.setlocale(locale.LC_ALL, text.menu.locale)#set the locale
+        current = time.strftime("%A, %d %B %Y, %H:%M:%S")#get current time
+        clockLabel.configure(text=current)#update labale with current time
+        upperFrame.after(500, clock)#do it every 500 milisec.
+        
+    clockLabel = tk.Label(upperFrame, text="")
+    clock()
+    
+    #userLoggedLabel.grid(row=1, column=1, columnspan=3, sticky="nsew")
+    userLoggedLabel.pack()
+    #clockLabel.grid(row=2, column=1, columnspan=3, sticky="nsew")
+    clockLabel.pack()
+    userButton.grid(row=1, column=1, padx=(5,0), sticky="nsew")
+    #userButton.pack(side="left", padx=2)
+    configButton.grid(row=1, column=2, padx=(5,0), sticky="nsew")
+    #configButton.pack(side="left", padx=2)
+    logoutButton.grid(row=1, column=3, padx=(5,0), sticky="nsew")
+    #logoutButton.pack(side="left", padx=2)
+    
+    upperFrame.pack(side="top")
+    menuFrame.pack()
+    bottomFrame.pack(side="bottom", fill="x", expand=True)
+    mainFrame.pack(fill="both", expand=True)
 
-    userButton.grid(row=1, column=1, padx=(5,0))
-    configButton.grid(row=1, column=2, padx=(5,0))
-    logoutButton.grid(row=1, column=3, padx=(5,0))
-    
-    upperFrame.pack(side="top", fill="x")
-    bottomFrame.pack(side="bottom", fill="x")
-    mainFrame.pack(fill="both")
+
+
 '''
 function to logout from system
 '''
