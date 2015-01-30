@@ -1085,7 +1085,6 @@ def groupTaxeDetails(groupTaxe):
     else:
         groupCascadeData.set(text.sysConfig.cascadeNo)
         
-    groupMemberListBox = tk.Listbox(rightSubFrame, bg="white")
     
     sql = "SELECT * FROM taxesGroupTaxe WHERE groupTaxeID = '{0}' ORDER BY priority".format(groupTaxeData[0])
     
@@ -1105,7 +1104,13 @@ def groupTaxeDetails(groupTaxe):
     finally:
         if connection:
             connection.close()
-                
+    i=1
+    
+    memberFrame = tk.Frame(rightSubFrame)
+    tk.Label(memberFrame, text="Taxe").grid(row=0, column=1)
+    tk.Label(memberFrame, text="Ordre").grid(row=0, column=2)        
+    
+    order = {}
     for member in memberList:
         sql2 = "SELECT * FROM Taxes WHERE ID = '{0}'".format(member[1])
         
@@ -1125,11 +1130,19 @@ def groupTaxeDetails(groupTaxe):
         finally:
             if connection:
                 connection.close()
-        groupMemberListBox.insert("end", memberTaxe[1]+":"+memberTaxe[2])
+        #groupMemberListBox.insert("end", memberTaxe[1]+":"+memberTaxe[2])
+        
+               
+        tk.Label(memberFrame, text=memberTaxe[1] + ":" + memberTaxe[2]).grid(row=i, column=1, pady=(5,0))
+        e = tk.Entry(memberFrame, bg="white", width=5)
+        e.insert(0, member[3])
+        e.grid(row=i, column=2, pady=(5,0))
+        order[memberTaxe[1]] = e
+        i = i+1
+        
         
     addMemberButton = tk.Button(memberButtonFrame, width=10, text=text.sysConfig.addMemberButton, command=lambda: addTaxeToGroup(groupTaxeData[0]))
-    upMemberButton = tk.Button(memberButtonFrame, width=10, text=text.sysConfig.upMemberButton)
-    downMemberButton = tk.Button(memberButtonFrame, width=10, text=text.sysConfig.downMemberButton)
+    
     removeMemberButton = tk.Button(memberButtonFrame, width=10, text=text.sysConfig.removeMemberButton)
          
     groupNameLabel.grid(row=2, column=1, pady=(5,0))
@@ -1141,20 +1154,20 @@ def groupTaxeDetails(groupTaxe):
     groupCascadeMenu.grid(row=2, column=1, pady=(5,0))
     
     addMemberButton.grid(row=1, column=1, pady=(5,0))
-    upMemberButton.grid(row=2, column=1, pady=(5,0))
-    downMemberButton.grid(row=3, column=1, pady=(5,0))
+    
     removeMemberButton.grid(row=4, column=1, pady=(5,0))
     
     saveGroupButton = tk.Button(groupButtonFrame, text=text.sysConfig.saveGroup)
     deleteGroupButton = tk.Button(groupButtonFrame, text=text.sysConfig.deleteGroup)
     
-    saveGroupButton.grid(row=1, column=1)
-    deleteGroupButton.grid(row=1, column=2)
+    saveGroupButton.grid(row=1, column=1, padx=(5,0))
+    deleteGroupButton.grid(row=1, column=2, padx=(5,0))
     
-    groupMemberListBox.grid(row=3, column=2, pady=(5,0), columnspan=1)
+    memberFrame.grid(row=3, column=2, pady=(5,0), columnspan=1)
     memberButtonFrame.grid(row=3, column=1)
-    groupButtonFrame.grid(row=4, column=1, columnspan=3)
+    groupButtonFrame.grid(row=4, column=1, columnspan=3, pady=(5,0))
     
+   
 '''
 function to add taxe to group
 ''' 
