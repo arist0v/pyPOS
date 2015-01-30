@@ -1196,7 +1196,7 @@ def addTaxeToGroup(groupID):
         
         cursor.execute(sql)#request to get taxe information
         
-        usedTaxes = cursor.fetchone()
+        usedTaxes = cursor.fetchall()
                               
     except mdb.Error, e:
         print "Error: {0} {1}".format(e.args[0], e.args[1])
@@ -1205,13 +1205,20 @@ def addTaxeToGroup(groupID):
     finally:
         if connection:
             connection.close()    
-             
-    for taxe in allTaxes:
-                 
-        if not taxe[0] in usedTaxes:
-           availabeTaxe.append(taxe)
     
-    taxeMenu = tk.OptionMenu(addTaxeWindow, selectedTaxe, *availabeTaxe)
+    nonAvailable = []
+    for taxe in usedTaxes:
+        nonAvailable.append(taxe[0])    
+             
+    for taxe in allTaxes:         
+        if not taxe[0] in nonAvailable:
+           availabeTaxe.append(taxe)
+           
+    if availabeTaxe == []:
+        taxeMenu = tk.OptionMenu(addTaxeWindow, selectedTaxe, *" ")
+    else:
+        taxeMenu = tk.OptionMenu(addTaxeWindow, selectedTaxe, *availabeTaxe)
+    
     taxeMenLabel = tk.Label(addTaxeWindow, text=text.sysConfig.chooseTaxe)
     addButton = tk.Button(addTaxeWindow, text=text.sysConfig.addMemberButton, command=lambda: saveAdditionGroup(groupID, selectedTaxe.get()))
     cancelButton = tk.Button(addTaxeWindow, text=text.sysConfig.cancelButton, command=lambda: addTaxeWindow.destroy())
@@ -1473,7 +1480,7 @@ def taxeDetails(taxe):
     taxeRateField.insert(0, taxeData[3])
     
     taxeEditButton = tk.Button(rightSubFrame, text=text.sysConfig.taxeEditButton, command= lambda: saveTaxeChange(taxeData[0], taxeNameData.get(), taxeDescriptionData.get(), taxeRateData.get()))
-    taxeDeleteButton = tk.Button(rightSubFrame, text=text.sysConfig.taxeDeleteButton)
+    taxeDeleteButton = tk.Button(rightSubFrame, text=text.sysConfig.taxeDeleteButton, command= lambda: deleteTaxe(taxeData))
         
     taxeNameLabel.grid(row=2, column=1, pady=(5,0))
     taxeNameField.grid(row=2, column=2, pady=(5,0), columnspan=2)
@@ -1488,6 +1495,55 @@ def taxeDetails(taxe):
     taxeEditButton.grid(row=5, column=1, pady=(5,0), columnspan=2)
     taxeDeleteButton.grid(row=5, column=2, pady=(5,0), columnspan=2)
     
+'''
+function to delete a taxe from the system
+'''
+def deleteTaxe(taxeData):
+    confirm = tkm.askquestion(text.sysConfig.deleteTaxeConfirmTitle.format(taxeData[1]), text.sysConfig.deleteTaxeConfirm.format(taxeData[1] + " " + taxeData[2]))
+    
+    if confirm == "yes":
+        sql = "DELETE FROM taxesGroupTaxe WHERE TaxesID = '{0}'".format(taxeData[0])#sql to delete all relation between the taxe and a taxeGroup
+        
+        try:        
+            connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+            cursor= connection.cursor()
+        
+            cursor.execute(sql)#request to save taxe info
+            
+            connection.commit()#commit change
+          
+        except mdb.Error, e:
+            print "Error: {0} {1}".format(e.args[0], e.args[1])
+            sys.exit(1)
+            
+        finally:
+            if connection:
+                connection.close()
+                
+        sql = "DELETE FROM Taxes WHERE ID = '{0}'".format(taxeData[0])
+        
+        try:        
+            connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+            cursor= connection.cursor()
+        
+            cursor.execute(sql)#request to save taxe info
+            
+            connection.commit()#commit change
+          
+        except mdb.Error, e:
+            print "Error: {0} {1}".format(e.args[0], e.args[1])
+            sys.exit(1)
+            
+        finally:
+            if connection:
+                connection.close()
+        tkm.showinfo(text.sysConfig.taxeDeletedTitle, text.sysConfig.taxeDeleted)         
+        taxeInfo()
+    else:
+        return
+        
 '''
 function to save the modification made on taxe
 '''
