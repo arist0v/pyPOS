@@ -200,8 +200,7 @@ class sysConfigScreen:
         self.cascadeYes = "Oui"
         self.cascadeNo = "Non"
         self.addMemberButton = "Ajouter"
-        self.upMemberButton = "Monter"
-        self.downMemberButton = "Descendre"
+        self.saveMemberButton = "Sauvgarder"
         self.removeMemberButton = "Supprimer"
         self.addTaxeWindow = "Ajouter une taxe au groupe"
         self.saveGroup = "Sauvegarder"
@@ -214,5 +213,6 @@ class sysConfigScreen:
         self.deleteTaxeConfirm = "Voulez vous vraiement supprimer la taxe {0}?"
         self.taxeDeletedTitle = "Supprimé"
         self.taxeDeleted = "La taxe à été supprimé"
+        self.orderSaved = "L'ordre a été modifié"
         
 sysConfig = sysConfigScreen()

@@ -1129,26 +1129,24 @@ def groupTaxeDetails(groupTaxe):
             
         finally:
             if connection:
-                connection.close()
-        #groupMemberListBox.insert("end", memberTaxe[1]+":"+memberTaxe[2])
-        
+                connection.close()       
                
         tk.Label(memberFrame, text=memberTaxe[1] + ":" + memberTaxe[2]).grid(row=i, column=1, pady=(5,0))
         e = tk.Entry(memberFrame, bg="white", width=5)
         e.insert(0, member[3])
         e.grid(row=i, column=2, pady=(5,0))
         taxe = {}
-        taxe["Order"] = e
-        taxe["ID"] = member[0]
-        taxe["Name"] = member[1]
-        taxe["Description"] = member[2]
-        taxe["Rate"] = member[3]
+        taxe["OrderEntry"] = e
+        taxe["ID"] = memberTaxe[0]
+        taxe["Name"] = memberTaxe[1]
+        taxe["Description"] = memberTaxe[2]
+        taxe["Rate"] = memberTaxe[3]
         
         order.append(taxe)
         i = i+1
                
     addMemberButton = tk.Button(memberButtonFrame, width=10, text=text.sysConfig.addMemberButton, command=lambda: addTaxeToGroup(groupTaxeData[0]))
-    
+    saveMemberButton = tk.Button(memberButtonFrame, width=10, text=text.sysConfig.saveMemberButton, command=lambda: saveMemberOrder(order, groupTaxeData[0], groupTaxe))
     removeMemberButton = tk.Button(memberButtonFrame, width=10, text=text.sysConfig.removeMemberButton)
          
     groupNameLabel.grid(row=2, column=1, pady=(5,0))
@@ -1160,8 +1158,8 @@ def groupTaxeDetails(groupTaxe):
     groupCascadeMenu.grid(row=2, column=1, pady=(5,0))
     
     addMemberButton.grid(row=1, column=1, pady=(5,0))
-    
-    removeMemberButton.grid(row=4, column=1, pady=(5,0))
+    saveMemberButton.grid(row=2, column=1, pady=(5,0))
+    removeMemberButton.grid(row=3, column=1, pady=(5,0))
     
     saveGroupButton = tk.Button(groupButtonFrame, text=text.sysConfig.saveGroup)
     deleteGroupButton = tk.Button(groupButtonFrame, text=text.sysConfig.deleteGroup)
@@ -1172,8 +1170,37 @@ def groupTaxeDetails(groupTaxe):
     memberFrame.grid(row=3, column=2, pady=(5,0), columnspan=1)
     memberButtonFrame.grid(row=3, column=1)
     groupButtonFrame.grid(row=4, column=1, columnspan=3, pady=(5,0))
-    
-   
+
+'''
+function to save modification to member order
+'''
+def saveMemberOrder(members, groupID, groupName):
+
+    for member in members:
+
+        sql = "UPDATE taxesGroupTaxe SET priority = '{0}' WHERE groupTaxeID = '{1}' AND TaxesID = '{2}'".format(member["OrderEntry"].get(), groupID, member["ID"])
+        print sql
+        try:        
+            connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+            cursor= connection.cursor()
+        
+            cursor.execute(sql)#request to save taxe info
+            
+            connection.commit()#commit change
+          
+        except mdb.Error, e:
+            print "Error: {0} {1}".format(e.args[0], e.args[1])
+            sys.exit(1)
+            
+        finally:
+            if connection:
+                connection.close()
+                
+    tkm.showinfo("", text.sysConfig.orderSaved)
+    groupTaxeDetails(groupName)
+        
+
 '''
 function to add taxe to group
 ''' 
