@@ -1110,7 +1110,7 @@ def groupTaxeDetails(groupTaxe):
     tk.Label(memberFrame, text="Taxe").grid(row=0, column=1)
     tk.Label(memberFrame, text="Ordre").grid(row=0, column=2)        
     
-    order = {}
+    order = []
     for member in memberList:
         sql2 = "SELECT * FROM Taxes WHERE ID = '{0}'".format(member[1])
         
@@ -1137,10 +1137,16 @@ def groupTaxeDetails(groupTaxe):
         e = tk.Entry(memberFrame, bg="white", width=5)
         e.insert(0, member[3])
         e.grid(row=i, column=2, pady=(5,0))
-        order[memberTaxe[1]] = e
+        taxe = {}
+        taxe["Order"] = e
+        taxe["ID"] = member[0]
+        taxe["Name"] = member[1]
+        taxe["Description"] = member[2]
+        taxe["Rate"] = member[3]
+        
+        order.append(taxe)
         i = i+1
-        
-        
+               
     addMemberButton = tk.Button(memberButtonFrame, width=10, text=text.sysConfig.addMemberButton, command=lambda: addTaxeToGroup(groupTaxeData[0]))
     
     removeMemberButton = tk.Button(memberButtonFrame, width=10, text=text.sysConfig.removeMemberButton)
