@@ -1179,7 +1179,7 @@ def saveMemberOrder(members, groupID, groupName):
     for member in members:
 
         sql = "UPDATE taxesGroupTaxe SET priority = '{0}' WHERE groupTaxeID = '{1}' AND TaxesID = '{2}'".format(member["OrderEntry"].get(), groupID, member["ID"])
-        print sql
+        
         try:        
             connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
         
