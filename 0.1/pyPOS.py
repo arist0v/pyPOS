@@ -1062,17 +1062,24 @@ def groupTaxeDetails(groupTaxe):
     finally:
         if connection:
             connection.close()   
+    
+    try:
+        taxeDataFrame.destroy()#try to destroy bottomFram if exist
+    except:
+        pass
        
     groupNameData = tk.StringVar()
     groupCascadeData = tk.StringVar()
     groupMemberData = tk.StringVar()
     
-    radioButtonFrame= tk.Frame(rightSubFrame, relief="ridge", borderwidth=3)
-    memberButtonFrame = tk.Frame(rightSubFrame)
-    groupButtonFrame = tk.Frame(rightSubFrame)
+    taxeDataFrame = tk.Frame(rightSubFrame)
+    
+    radioButtonFrame= tk.Frame(taxeDataFrame, relief="ridge", borderwidth=3)
+    memberButtonFrame = tk.Frame(taxeDataFrame)
+    groupButtonFrame = tk.Frame(taxeDataFrame)
        
-    groupNameLabel = tk.Label(rightSubFrame, text=text.sysConfig.groupNameLabel)
-    groupNameField = tk.Entry(rightSubFrame, textvariable= groupNameData, bg="white", width=30)
+    groupNameLabel = tk.Label(taxeDataFrame, text=text.sysConfig.groupNameLabel)
+    groupNameField = tk.Entry(taxeDataFrame, textvariable= groupNameData, bg="white", width=30)
     groupNameField.delete(0, "end")
     groupNameField.insert(0, groupTaxeData[1])
         
@@ -1106,7 +1113,7 @@ def groupTaxeDetails(groupTaxe):
             connection.close()
     i=1
     
-    memberFrame = tk.Frame(rightSubFrame)
+    memberFrame = tk.Frame(taxeDataFrame)
     tk.Label(memberFrame, text="Taxe").grid(row=0, column=1)
     tk.Label(memberFrame, text="Ordre").grid(row=0, column=2)        
     
@@ -1147,7 +1154,7 @@ def groupTaxeDetails(groupTaxe):
                
     addMemberButton = tk.Button(memberButtonFrame, width=10, text=text.sysConfig.addMemberButton, command=lambda: addTaxeToGroup(groupTaxeData[0]))
     saveMemberButton = tk.Button(memberButtonFrame, width=10, text=text.sysConfig.saveMemberButton, command=lambda: saveMemberOrder(order, groupTaxeData[0], groupTaxe))
-    removeMemberButton = tk.Button(memberButtonFrame, width=10, text=text.sysConfig.removeMemberButton)
+    removeMemberButton = tk.Button(memberButtonFrame, width=10, text=text.sysConfig.removeMemberButton, command= lambda: removeTaxeFromGroup(groupTaxeData[0]))
          
     groupNameLabel.grid(row=2, column=1, pady=(5,0))
     groupNameField.grid(row=2, column=2, pady=(5,0))
@@ -1167,9 +1174,120 @@ def groupTaxeDetails(groupTaxe):
     saveGroupButton.grid(row=1, column=1, padx=(5,0))
     deleteGroupButton.grid(row=1, column=2, padx=(5,0))
     
+    taxeDataFrame.grid(row=2, column=1, columnspan=2)
     memberFrame.grid(row=3, column=2, pady=(5,0), columnspan=1)
     memberButtonFrame.grid(row=3, column=1)
     groupButtonFrame.grid(row=4, column=1, columnspan=3, pady=(5,0))
+    
+'''
+function to remove taxe to group
+''' 
+def removeTaxeFromGroup(groupID):
+       
+    sql = "SELECT * FROM Taxes WHERE ID IN (SELECT TaxesID FROM taxesGroupTaxe WHERE groupTaxeID = '{0}')".format(groupID)
+    
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute(sql)#request to get taxe information
+        
+        memberTaxes = cursor.fetchall()
+                              
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+    
+    sql = "SELECT * FROM groupTaxe WHERE ID = '{0}'".format(groupID)              
+    
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute(sql)#request to get taxe information
+        
+        groupData = cursor.fetchone()
+                              
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()            
+    
+    global removeTaxeWindow
+    removeTaxeWindow = tk.Toplevel(window)
+    removeTaxeWindow.title(text.sysConfig.removeTaxeWindow.format(groupData[1]))#add groupeName with .format
+    removeTaxeWindow.geometry("400x75+0+0")
+    
+    windowFrame = tk.Frame(removeTaxeWindow, bg="white")
+    formFrame=tk.Frame(windowFrame)
+    selectedTaxe = tk.StringVar()
+    
+    memberTaxeList = []
+    
+    for member in memberTaxes:
+        memberTaxeList.append(member[1] + ":" + member[2])
+    
+    if memberTaxeList == []:
+        memberTaxeMenu = tk.OptionMenu(formFrame, selectedTaxe, " ")
+    else:
+        memberTaxeMenu = tk.OptionMenu(formFrame, selectedTaxe, *memberTaxeList)
+    
+    removeTaxeButton = tk.Button(formFrame, text=text.sysConfig.removeTaxeButton, command= lambda: remove(selectedTaxe.get(), groupData))
+    cancelButton = tk.Button(formFrame, text=text.sysConfig.cancelButton, command= lambda: removeTaxeWindow.destroy())
+    
+    windowFrame.pack() 
+    formFrame.pack(fill="both", expand=True)
+    memberTaxeMenu.grid(row=1, column=1, columnspan=2, sticky="nsew")
+    removeTaxeButton.grid(row=2, column=1, sticky="nsew")
+    cancelButton.grid(row=2, column=2, sticky="nsew")
+    
+    def remove(taxe, groupData):
+        
+        if taxe == "":
+            tkm.showerror("", text.sysConfig.noTaxe)
+            removeTaxeWindow.destroy()
+            return
+        
+        confirm = tkm.askquestion("", text.sysConfig.confirmRemove.format(taxe, groupData[1]))
+        
+        if confirm == "yes":
+            sql = "DELETE FROM taxesGroupTaxe where TaxesID IN (SELECT ID FROM Taxes WHERE Taxe = '{0}' AND Description = '{1}') AND groupTaxeID = '{2}'".format(taxe.split(":")[0], taxe.split(":")[1], groupData[0])
+            
+            try:        
+                connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+                cursor= connection.cursor()
+        
+                cursor.execute(sql)#request to save taxe info
+            
+                connection.commit()#commit change
+          
+            except mdb.Error, e:
+                print "Error: {0} {1}".format(e.args[0], e.args[1])
+                sys.exit(1)
+            
+            finally:
+                if connection:
+                    connection.close()
+            
+            tkm.showinfo("", text.sysConfig.taxeRemoved)
+            removeTaxeWindow.destroy()
+            groupTaxeDetails(groupData[1])
+            
+        else:
+            removeTaxeWindow.destroy()
+            return
+        
+        
 
 '''
 function to save modification to member order
@@ -1302,7 +1420,7 @@ def saveAdditionGroup(groupID, taxeID):
         if connection:
             connection.close()
     max= maxPriority[0]
-    sql = "INSERT INTO taxesGroupTaxe(taxesID, groupTaxeID, priority) VALUES('{0}', '{1}', '{2}')".format(taxeID[2], groupID, max+1)
+    sql = "INSERT INTO taxesGroupTaxe(taxesID, groupTaxeID, priority) VALUES('{0}', '{1}', 0)".format(taxeID[2], groupID)
     
     try:        
         connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
