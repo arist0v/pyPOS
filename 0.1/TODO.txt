@@ -32,9 +32,7 @@ currently working on config page:
     -cash bank
 -configuration section:
     -database backup/restore from .sql file
-    -taxes delete(delete to do)
     -taxes group delete groupe
-    -taxes group delete taxes from group
         
 LATER:
 create a setup.py for installation -Gui:
