@@ -1168,7 +1168,7 @@ def groupTaxeDetails(groupTaxe):
     saveMemberButton.grid(row=2, column=1, pady=(5,0))
     removeMemberButton.grid(row=3, column=1, pady=(5,0))
     
-    saveGroupButton = tk.Button(groupButtonFrame, text=text.sysConfig.saveGroup)
+    saveGroupButton = tk.Button(groupButtonFrame, text=text.sysConfig.saveGroup, command= lambda: saveGroupDetails(groupTaxeData[0], groupNameData.get(), groupCascadeData.get()))
     deleteGroupButton = tk.Button(groupButtonFrame, text=text.sysConfig.deleteGroup)
     
     saveGroupButton.grid(row=1, column=1, padx=(5,0))
@@ -1180,7 +1180,44 @@ def groupTaxeDetails(groupTaxe):
     groupButtonFrame.grid(row=4, column=1, columnspan=3, pady=(5,0))
     
 '''
-function to remove taxe to group
+function to delete group of taxe
+'''
+
+'''
+function to save main group taxe data
+'''
+def saveGroupDetails(groupID, groupName, cascade):
+        
+    if cascade == text.sysConfig.cascadeYes:
+        cascadeBool = 1
+    else:
+        cascadeBool = 0
+        
+    sql = "UPDATE groupTaxe SET groupName='{0}', cascadeBOOL='{1}' WHERE ID='{2}'".format(groupName, cascadeBool, groupID)
+    print sql
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute(sql)#request to save taxe info
+            
+        connection.commit()#commit change
+          
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+    
+    tkm.showinfo("", text.sysConfig.groupSaved)
+    groupTaxeDetails(groupName) 
+    
+    
+'''
+function to remove taxe to groups
 ''' 
 def removeTaxeFromGroup(groupID):
        

@@ -218,5 +218,6 @@ class sysConfigScreen:
         self.removeTaxeButton = "Supprimer"
         self.confirmRemove = "Voulez vous vraiment retiré la taxe : {0}, du groupe: {1}"
         self.taxeRemoved = "La taxe a été retiré du groupe."
+        self.groupSaved = "Les informations ont été sauvegardé"
         
 sysConfig = sysConfigScreen()
