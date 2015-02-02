@@ -1026,14 +1026,81 @@ def groupTaxeInfo():
     groupTaxeMenu.configure(width=26, bg="white")
     
     groupTaxeChoseButton = tk.Button(rightSubFrame, text=text.sysConfig.groupTaxeChooseButton, command= lambda: groupTaxeDetails(groupTaxeField.get()))
-    groupTaxeNewButton = tk.Button(rightSubFrame, text=text.sysConfig.newGroupTaxeButton, command=lambda: newTaxe())
+    groupTaxeNewButton = tk.Button(rightSubFrame, text=text.sysConfig.newGroupTaxeButton, command=lambda: newGroupTaxe())
         
     groupTaxeMenu.grid(row=1, column=1, pady=(5,0))
     groupTaxeChoseButton.grid(row=1, column=2, pady=(5,0), padx=90)
     groupTaxeNewButton.grid(row=1, column=3, pady=(5,0), padx=(5,0), columnspan=2)
     
     rightSubFrame.pack(fill="x", pady=(5,0), expand=True, side="right", anchor="n")
+
+'''
+function to add new group of taxe
+'''
+def newGroupTaxe():
     
+    global newGroupWindow
+    
+    groupNameData = tk.StringVar()
+    groupCascadeData = tk.StringVar()
+    
+    newGroupWindow = tk.Toplevel(window)
+    newGroupWindow.title(text.sysConfig.newGroupWindowTitle)
+    
+    groupNameLabel = tk.Label(newGroupWindow, text=text.sysConfig.groupNameLabel)
+    groupNameField = tk.Entry(newGroupWindow, textvariable= groupNameData, bg="white", width=30)
+    groupNameField.focus()
+    
+    groupCascadeLabel = tk.Label(newGroupWindow, text=text.sysConfig.groupCascadeLabel)
+    groupCascadeMenu = tk.OptionMenu(newGroupWindow, groupCascadeData, text.sysConfig.cascadeYes, text.sysConfig.cascadeNo)
+    
+    groupSaveButton = tk.Button(newGroupWindow, text=text.sysConfig.saveMemberButton, command= lambda: saveGroup(groupNameData.get(), groupCascadeData.get()))
+    groupCancelButton = tk.Button(newGroupWindow, text=text.sysConfig.cancelNewTaxe, command= lambda: newGroupWindow.destroy())
+    
+    groupNameLabel.grid(row=1, column=1, pady=(5,0))
+    groupNameField.grid(row=1, column=2, pady=(5,0), padx=(0,25))
+    
+    groupCascadeLabel.grid(row=2, column=1, pady=(5,0))
+    groupCascadeMenu.grid(row=2, column=2, pady=(5,0), padx=(0,25))
+        
+    groupSaveButton.grid(row=3, column=1, pady=(5,0), padx=(25,0))
+    groupCancelButton.grid(row=3, column=2, pady=(5,0))
+    
+    def saveGroup(groupName, cascade):
+        
+        if groupName == "":
+            tkm.showerror("", text.sysConfig.noGroupName)
+            return
+                
+        if cascade == text.sysConfig.cascadeYes:
+            cascade = 1
+        else:
+            cascade = 0
+        
+        
+        sql = "INSERT INTO groupTaxe (groupName, cascadeBOOL) VALUES('{0}','{1}')".format(groupName, cascade)
+        
+        try:        
+            connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+            cursor= connection.cursor()
+        
+            cursor.execute(sql)#request to save taxe info
+            
+            connection.commit()#commit change
+          
+        except mdb.Error, e:
+            print "Error: {0} {1}".format(e.args[0], e.args[1])
+            sys.exit(1)
+            
+        finally:
+            if connection:
+                connection.close()
+        
+        tkm.showinfo("", text.sysConfig.newGroupSaved)
+        newGroupWindow.destroy()
+        groupTaxeInfo()        
+
 '''
 function to show details of group taxe
 '''
@@ -1169,7 +1236,7 @@ def groupTaxeDetails(groupTaxe):
     removeMemberButton.grid(row=3, column=1, pady=(5,0))
     
     saveGroupButton = tk.Button(groupButtonFrame, text=text.sysConfig.saveGroup, command= lambda: saveGroupDetails(groupTaxeData[0], groupNameData.get(), groupCascadeData.get()))
-    deleteGroupButton = tk.Button(groupButtonFrame, text=text.sysConfig.deleteGroup)
+    deleteGroupButton = tk.Button(groupButtonFrame, text=text.sysConfig.deleteGroup, command= lambda: deleteGroupTaxe(groupTaxeData[0]))
     
     saveGroupButton.grid(row=1, column=1, padx=(5,0))
     deleteGroupButton.grid(row=1, column=2, padx=(5,0))
@@ -1182,7 +1249,57 @@ def groupTaxeDetails(groupTaxe):
 '''
 function to delete group of taxe
 '''
-
+def deleteGroupTaxe(groupID):
+    
+    sql = "SELECT * FROM taxesGroupTaxe WHERE groupTaxeID = '{0}'".format(groupID)
+    
+    try:        
+        connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+        cursor= connection.cursor()
+        
+        cursor.execute(sql)#request to get taxe information
+        
+        haveMember = cursor.fetchall()
+                              
+    except mdb.Error, e:
+        print "Error: {0} {1}".format(e.args[0], e.args[1])
+        sys.exit(1)
+            
+    finally:
+        if connection:
+            connection.close()
+    
+    if haveMember:
+        tkm.showerror("", text.sysConfig.groupNotEmpty)
+        return
+    else:
+        confirm = tkm.askquestion("", text.sysConfig.confirmDelete)
+        
+        if confirm == "yes":
+            sql = "DELETE FROM groupTaxe WHERE ID = '{0}'".format(groupID)
+        
+            try:        
+                connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
+        
+                cursor= connection.cursor()
+        
+                cursor.execute(sql)#request to save taxe info
+            
+                connection.commit()#commit change
+          
+            except mdb.Error, e:
+                print "Error: {0} {1}".format(e.args[0], e.args[1])
+                sys.exit(1)
+            
+            finally:
+                if connection:
+                    connection.close()
+            tkm.showinfo("", text.sysConfig.groupDeleted)
+            groupTaxeInfo()
+        else:
+            return
+        
 '''
 function to save main group taxe data
 '''
@@ -1194,7 +1311,7 @@ def saveGroupDetails(groupID, groupName, cascade):
         cascadeBool = 0
         
     sql = "UPDATE groupTaxe SET groupName='{0}', cascadeBOOL='{1}' WHERE ID='{2}'".format(groupName, cascadeBool, groupID)
-    print sql
+   
     try:        
         connection = mdb.connect(host=dbConfig.mysqlServer.server, user=dbConfig.mysqlServer.user, passwd=dbConfig.mysqlServer.password, db=dbConfig.mysqlServer.database)#connection to mysqldb
         

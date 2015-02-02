@@ -219,5 +219,12 @@ class sysConfigScreen:
         self.confirmRemove = "Voulez vous vraiment retiré la taxe : {0}, du groupe: {1}"
         self.taxeRemoved = "La taxe a été retiré du groupe."
         self.groupSaved = "Les informations ont été sauvegardé"
+        self.groupNotEmpty  = "Le groupe doit être vide pour pouvoir être supprimé"
+        self.groupDeleted = "Le groupe a été supprimé"
+        self.confirmDelete = "Êtes vous sûre de vouloir supprimer ce groupe"
+        self.newGroupWindowTitle = "Ajout d'un groupe de taxes"
+        self.groupNameLabel = "Nom du groupe :"
+        self.noGroupName = "Vous devez inscrire un nom pour le groupe"
+        self.newGroupSaved = "Le nouveau groupe a été créer"
         
 sysConfig = sysConfigScreen()
