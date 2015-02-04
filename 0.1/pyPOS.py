@@ -952,7 +952,7 @@ def sysConfig():
     languageButton.config(state=state2)
     storeInfoButton = tk.Button(leftSubFrame, text=text.sysConfig.menuStoreInfo, width=15, command= lambda: storeInfo())
     storeInfoButton.config(state=state)
-    databaseButton = tk.Button(leftSubFrame, text=text.sysConfig.menuDatabase, width=15)
+    databaseButton = tk.Button(leftSubFrame, text=text.sysConfig.menuDatabase, width=15, command= lambda: databaseConfig())
     databaseButton.config(state=state)
     taxeButton = tk.Button(leftSubFrame, text=text.sysConfig.menuTaxe, width=15, command= lambda: taxeInfo())
     taxeButton.config(state=state2)
@@ -968,6 +968,14 @@ def sysConfig():
     rightSubFrame.pack(fill="both", side="right", expand=True)
     leftSubFrame.pack(side="left", anchor="w", fill="y", expand=True)   
     bottomFrame.pack(side="bottom", fill="y", anchor="w", expand=True)
+    
+'''
+function to show the database configuration page
+'''
+def databaseConfig():
+    print "DB Config"
+    #mysqldump - u USER -p=PASSWORD --port PORT --routines DATABASE > file.sql
+    #mysqldump -u USER -p=PASSWORD --port PORT DATABASE < file.sql
     
 '''
 function to open group taxe information

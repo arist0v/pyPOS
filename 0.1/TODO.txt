@@ -27,6 +27,7 @@ currently working on config page:
     -year profit
     -taxes report
     -inventory report
+    -sold to pay 30/60/90
     -bank section
     -hours bank
     -cash bank
