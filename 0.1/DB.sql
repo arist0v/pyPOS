@@ -175,7 +175,7 @@ CREATE TABLE `storeData` (
 
 LOCK TABLES `storeData` WRITE;
 /*!40000 ALTER TABLE `storeData` DISABLE KEYS */;
-INSERT INTO `storeData` VALUES (1,'Martin-Formatique','1484, chemin de ChÃ¢teau-Bigot','G2L 1H1','QuÃ©bec','Qc','418-956-4375','verret.martin@gmail.com');
+INSERT INTO `storeData` VALUES (1,'Martin-Formatique','PRIVATE','PRIVATE','PRIVATE','PRIVATE','PRIVATE','PRIVATE');
 /*!40000 ALTER TABLE `storeData` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -242,4 +242,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-02-05 16:00:42
+-- Dump completed on 2015-02-05 16:02:10
