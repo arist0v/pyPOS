@@ -279,6 +279,7 @@ def menuScreen():
     global bottomFrame
     bottomFrame = tk.Frame(mainFrame)#genereate the bottom frame
     
+    clientButton = tk.Button(menuFrame, width=10, text=text.menu.client, borderwidth=1)
     userButton = tk.Button(menuFrame,width=10, text=text.menu.user, command= lambda: userManager(), borderwidth=1)
     configButton = tk.Button(menuFrame,width=10, text=text.menu.config, command=lambda: sysConfig())
     configButton.config(state=state)
@@ -298,23 +299,20 @@ def menuScreen():
     clockLabel = tk.Label(upperFrame, text="")
     clock()
     
-    #userLoggedLabel.grid(row=1, column=1, columnspan=3, sticky="nsew")
+
     userLoggedLabel.pack()
-    #clockLabel.grid(row=2, column=1, columnspan=3, sticky="nsew")
+
     clockLabel.pack()
-    userButton.grid(row=1, column=1, padx=(5,0), sticky="nsew")
-    #userButton.pack(side="left", padx=2)
-    configButton.grid(row=1, column=2, padx=(5,0), sticky="nsew")
-    #configButton.pack(side="left", padx=2)
-    logoutButton.grid(row=1, column=3, padx=(5,0), sticky="nsew")
-    #logoutButton.pack(side="left", padx=2)
+    
+    clientButton.grid(row=1, column=1, padx=(5,0), sticky="nsew")    
+    userButton.grid(row=1, column=2, padx=(5,0), sticky="nsew")
+    configButton.grid(row=1, column=3, padx=(5,0), sticky="nsew")
+    logoutButton.grid(row=1, column=4, padx=(5,0), sticky="nsew")
     
     upperFrame.pack(side="top")
     menuFrame.pack()
     bottomFrame.pack(side="bottom", fill="both", expand=True)
     mainFrame.pack(fill="both", expand=True)
-
-
 
 '''
 function to logout from system

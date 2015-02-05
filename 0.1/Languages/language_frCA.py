@@ -60,6 +60,7 @@ class menuScreen:
         self.config = "Configuration"# configuration menu button
         self.userLogged= "Utilisateur : "
         self.locale = "fr_CA.utf8"#set the locale for the clock and date
+        self.client = "Client"
         
 menu = menuScreen()
 

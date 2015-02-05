@@ -8,9 +8,11 @@ currently working on config page:
 
 -sales section
 -client section:
+	-add client
+	-remove client
+	-client history(invoice)
     -client information
-    -type of hourly rate
-    -find old invoice
+    -hourly rate
     -print contract(i.e: pentest agrement)*
 -inventory section:
     -item*
