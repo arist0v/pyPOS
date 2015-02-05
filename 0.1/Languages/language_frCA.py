@@ -150,7 +150,7 @@ class newUserScreen:
         self.noUsername = "Vous devez inscrire un nom d'utilisateur"
         self.userAddedTitle = "Ajout d'utilisateur"
         self.userAdded = "Utilisateur ajouté"
-        
+                
 newUser = newUserScreen()
 
 '''
@@ -226,5 +226,11 @@ class sysConfigScreen:
         self.groupNameLabel = "Nom du groupe :"
         self.noGroupName = "Vous devez inscrire un nom pour le groupe"
         self.newGroupSaved = "Le nouveau groupe a été créer"
+        self.backupButton = "Sauvegarder"
+        self.restoreButton = "Restaurer"
+        self.backupDone = "Sauvegarde Effectué"
+        self.backupError = "Erreur lors de la sauvegarde"
+        self.restoreDone = "La base de données a été restauré"
+        self.restoreError = "Erreur lors de la restauration"
         
 sysConfig = sysConfigScreen()

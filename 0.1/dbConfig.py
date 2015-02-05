@@ -18,7 +18,8 @@ class server:
         self.user="POS"#username for the server auth
         self.password="POS"#password for the server auth
         self.database="POS"#database name
-
+        self.port = "3306"
+        
 mysqlServer= server()
         
 

@@ -31,9 +31,6 @@ currently working on config page:
     -bank section
     -hours bank
     -cash bank
--configuration section:
-    -database backup/restore from .sql file
-    -taxes group delete groupe
         
 LATER:
 create a setup.py for installation -Gui:

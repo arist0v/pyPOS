@@ -28,7 +28,7 @@ CREATE TABLE `Taxes` (
   `Description` varchar(100) DEFAULT NULL,
   `Rate` decimal(6,5) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -37,7 +37,7 @@ CREATE TABLE `Taxes` (
 
 LOCK TABLES `Taxes` WRITE;
 /*!40000 ALTER TABLE `Taxes` DISABLE KEYS */;
-INSERT INTO `Taxes` VALUES (1,'TPS','0123456789',5.00000),(2,'TVQ','9876543210',9.97500);
+INSERT INTO `Taxes` VALUES (2,'TVQ','98765432100',9.97500),(6,'TPS','01234567899',5.00000);
 /*!40000 ALTER TABLE `Taxes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -58,7 +58,7 @@ CREATE TABLE `Technicien` (
   `levelID` smallint(1) DEFAULT NULL,
   PRIMARY KEY (`ID`),
   UNIQUE KEY `Username` (`Username`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -105,9 +105,9 @@ DROP TABLE IF EXISTS `groupTaxe`;
 CREATE TABLE `groupTaxe` (
   `ID` int(10) NOT NULL AUTO_INCREMENT,
   `groupName` varchar(100) DEFAULT NULL,
-  `cascade` int(1) DEFAULT NULL,
+  `cascadeBOOL` int(10) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -116,7 +116,7 @@ CREATE TABLE `groupTaxe` (
 
 LOCK TABLES `groupTaxe` WRITE;
 /*!40000 ALTER TABLE `groupTaxe` DISABLE KEYS */;
-INSERT INTO `groupTaxe` VALUES (1,'Quebec',1);
+INSERT INTO `groupTaxe` VALUES (3,'Quebec',1);
 /*!40000 ALTER TABLE `groupTaxe` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -175,7 +175,7 @@ CREATE TABLE `storeData` (
 
 LOCK TABLES `storeData` WRITE;
 /*!40000 ALTER TABLE `storeData` DISABLE KEYS */;
-INSERT INTO `storeData` VALUES (1,'Informatique Martin Verret','1484, chemin de ChÃ¢teau-Bigot','G2L 1H1','QuÃ©bec','Qc','418-956-4375','verret.martin@gmail.com');
+INSERT INTO `storeData` VALUES (1,'Martin-Formatique','1484, chemin de ChÃ¢teau-Bigot','G2L 1H1','QuÃ©bec','Qc','418-956-4375','verret.martin@gmail.com');
 /*!40000 ALTER TABLE `storeData` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -214,9 +214,9 @@ CREATE TABLE `taxesGroupTaxe` (
   `ID` int(10) NOT NULL AUTO_INCREMENT,
   `TaxesID` int(10) DEFAULT NULL,
   `groupTaxeID` int(10) DEFAULT NULL,
-  `order` int(10) DEFAULT NULL,
+  `priority` int(10) DEFAULT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -225,6 +225,7 @@ CREATE TABLE `taxesGroupTaxe` (
 
 LOCK TABLES `taxesGroupTaxe` WRITE;
 /*!40000 ALTER TABLE `taxesGroupTaxe` DISABLE KEYS */;
+INSERT INTO `taxesGroupTaxe` VALUES (1,2,3,2),(2,6,3,1);
 /*!40000 ALTER TABLE `taxesGroupTaxe` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -241,4 +242,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-01-28 14:50:04
+-- Dump completed on 2015-02-05 11:38:55

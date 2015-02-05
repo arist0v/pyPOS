@@ -21,6 +21,9 @@ import tkMessageBox as tkm#import tk message box
 import os#import the OS function
 import time#import the time module
 import locale#import the local module
+import tkFileDialog as tkf#import file dialog module
+from subprocess import check_call#import module to call system command
+
 
 global version#create global var for version number
 version = "0.1"#current version
@@ -973,10 +976,45 @@ def sysConfig():
 function to show the database configuration page
 '''
 def databaseConfig():
-    print "DB Config"
-    #mysqldump - u USER -p=PASSWORD --port PORT --routines DATABASE > file.sql
-    #mysqldump -u USER -p=PASSWORD --port PORT DATABASE < file.sql
     
+    try:
+        rightSubFrame.destroy()#try to destroy bottomFram if exist
+    except:
+        pass
+    
+    global rightSubFrame  
+    rightSubFrame = tk.Frame(bottomFrame)#recreate a new bottom frame
+    
+    buttonFrame= tk.Frame(rightSubFrame)
+    
+    backupButton = tk.Button(buttonFrame, text=text.sysConfig.backupButton, command=lambda: backupDB())
+    restoreButton = tk.Button(buttonFrame, text=text.sysConfig.restoreButton, command=lambda: restoreDB())
+    
+    rightSubFrame.pack(fill="x", pady=(5,0), expand=True, side="right", anchor="n")
+    buttonFrame.pack(pady=(5,0))
+    backupButton.grid(row=1, column=1, padx=(5,0))
+    restoreButton.grid(row=1, column=2, padx=(5,0))
+    
+    def backupDB():
+        
+        file = tkf.asksaveasfilename(defaultextension=".sql")
+        if file is None:
+            return
+        if not check_call("mysqldump -u {0} -h {1} -p{2} --port {3} --routines {4} --result-file={5}".format(dbConfig.mysqlServer.user, dbConfig.mysqlServer.server, dbConfig.mysqlServer.password, dbConfig.mysqlServer.port, dbConfig.mysqlServer.database, file), shell=True):
+            tkm.showinfo("", text.sysConfig.backupDone)
+        else:
+            tkm.showinfo("", text.sysConfig.backupError)
+            
+    def restoreDB():
+        
+        file = tkf.askopenfilename(defaultextension=".sql")
+        if file is None:
+            return      #mysqldump -u USER -p=PASSWORD --port PORT DATABASE < file.sql
+        if not check_call("mysql -u {0} -h {1} -p{2} --port {3} {4} < {5}".format(dbConfig.mysqlServer.user, dbConfig.mysqlServer.server, dbConfig.mysqlServer.password, dbConfig.mysqlServer.port, dbConfig.mysqlServer.database, file), shell=True):
+            tkm.showinfo("", text.sysConfig.restoreDone)
+        else:
+            tkm.showinfo("", text.sysConfig.restoreError)
+            
 '''
 function to open group taxe information
 '''
