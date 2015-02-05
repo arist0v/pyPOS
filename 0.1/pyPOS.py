@@ -1015,6 +1015,7 @@ def databaseConfig():
         else:
             tkm.showinfo("", text.sysConfig.restoreError)
             
+            
 '''
 function to open group taxe information
 '''
