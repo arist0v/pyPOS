@@ -65,6 +65,15 @@ class menuScreen:
 menu = menuScreen()
 
 '''
+text for client manager screen
+'''
+class clientManagerScreen:
+    def __init__(self):
+        self.addClient = "Nouveau Client"
+
+clientManager = clientManagerScreen()
+
+'''
 text for the user manager screen
 '''
 

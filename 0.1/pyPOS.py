@@ -279,7 +279,7 @@ def menuScreen():
     global bottomFrame
     bottomFrame = tk.Frame(mainFrame)#genereate the bottom frame
     
-    clientButton = tk.Button(menuFrame, width=10, text=text.menu.client, borderwidth=1)
+    clientButton = tk.Button(menuFrame, width=10, text=text.menu.client, command= lambda: clientManager(), borderwidth=1)
     userButton = tk.Button(menuFrame,width=10, text=text.menu.user, command= lambda: userManager(), borderwidth=1)
     configButton = tk.Button(menuFrame,width=10, text=text.menu.config, command=lambda: sysConfig())
     configButton.config(state=state)
@@ -323,6 +323,44 @@ def sysLogout():
     connectedUser.logged = False#disconnect user
     connectedUser.username = ""#erase username
     loginScreen()#go back to login scren
+    
+'''
+function to acces the client management menu
+'''
+def clientManager():
+    
+    try:
+        bottomFrame.destroy()#try to destroy bottomFram if exist
+    except:
+        pass
+    
+    try:
+        rightSubFrame.destroy()#try to destroy right frame if exist
+    except:
+        pass
+    
+    try:
+        leftSubFrame.destroy()#try to destroy left fream if exist
+    except:
+        pass
+    
+    global bottomFrame  
+    bottomFrame = tk.Frame(mainFrame)#recreate a new bottom frame
+    
+    global leftSubFrame
+    leftSubFrame = tk.Frame(bottomFrame, borderwidth=5)
+    
+    global rightSubFrame
+    rightSubFrame = tk.Frame(bottomFrame)
+    
+    addClientButton = tk.Button(leftSubFrame, text=text.clientManager.addClient)
+    
+    addClientButton.grid(row=1, column=1, pady=(5,0))
+    
+    leftSubFrame.pack(side="left", fill="both", expand=True)
+    rightSubFrame.pack(fill="both",side="right", expand=True)
+    
+    bottomFrame.pack(side="bottom", fill="y",anchor="w", expand=True)
     
 '''
 function to access the user management menu
@@ -373,10 +411,9 @@ def userManager():
     userListLabel.grid(row=1, column=1)
     userList.grid(row=2, column=1, columnspan=1)
     addUserButton.grid(row=3, column=1, columnspan=1, pady=(5,0))
+    
     leftSubFrame.pack(side="left", fill="both", expand=True)
     rightSubFrame.pack(fill="both",side="right", expand=True)
-    
-       
 
     bottomFrame.pack(side="bottom", fill="y",anchor="w", expand=True)
     
