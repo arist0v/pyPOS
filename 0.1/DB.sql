@@ -67,7 +67,7 @@ CREATE TABLE `Technicien` (
 
 LOCK TABLES `Technicien` WRITE;
 /*!40000 ALTER TABLE `Technicien` DISABLE KEYS */;
-INSERT INTO `Technicien` VALUES (1,'Martin','Verret','verret.martin@gmail.com','mverret','a92009999015bfc5b8aa4a4008dd846abbd9ca3331f31b0d50cf1aa81f8dbc2db5dd5f27b496423bd5dceabeae8f4df5aee1b2135bbe7bde69b120d909421a634c89da00bea87698ce4561116f6dc21fcbedcc9509',3);
+INSERT INTO `Technicien` VALUES (1,'Bob','Gratton','bobGratton@grattonmail.com','bgratton','a92009999015bfc5b8aa4a4008dd846abbd9ca3331f31b0d50cf1aa81f8dbc2db5dd5f27b496423bd5dceabeae8f4df5aee1b2135bbe7bde69b120d909421a634c89da00bea87698ce4561116f6dc21fcbedcc9509',3);
 /*!40000 ALTER TABLE `Technicien` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -175,7 +175,7 @@ CREATE TABLE `storeData` (
 
 LOCK TABLES `storeData` WRITE;
 /*!40000 ALTER TABLE `storeData` DISABLE KEYS */;
-INSERT INTO `storeData` VALUES (1,'Martin-Formatique','PRIVATE','PRIVATE','PRIVATE','PRIVATE','PRIVATE','PRIVATE');
+INSERT INTO `storeData` VALUES (1,'Gratton-Formatique','PRIVATE','PRIVATE','PRIVATE','PRIVATE','PRIVATE','PRIVATE');
 /*!40000 ALTER TABLE `storeData` ENABLE KEYS */;
 UNLOCK TABLES;
 
